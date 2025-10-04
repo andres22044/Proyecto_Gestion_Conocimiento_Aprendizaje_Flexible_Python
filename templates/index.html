@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Aprendizaje Flexible en Programación{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Aprendizaje <span class="text-primary">Flexible</span> en Programación
+                </h1>
+                <p class="lead mb-4 text-muted">
+                    Un proyecto educativo que combina teoría y práctica para dominar 
+                    el desarrollo web moderno con Flask y tecnologías actuales.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="#proyectos" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-rocket me-2"></i>Ver Proyectos
+                    </a>
+                    <a href="#aprendizaje" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="fas fa-info-circle me-2"></i>Método de Aprendizaje
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image mt-5 mt-lg-0">
+                    <i class="fas fa-laptop-code text-primary" style="font-size: 12rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Proyectos Section -->
+<section id="proyectos" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Proyectos Desarrollados</h2>
+            <p class="lead text-muted">Explora los diferentes módulos y aplicaciones creadas durante el aprendizaje</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper bg-primary mb-3">
+                            <i class="fas fa-chart-line fa-2x text-white"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">ML Supervisado</h5>
+                        <p class="text-muted mb-3">
+                            Análisis de casos reales de machine learning en diferentes industrias.
+                        </p>
+                        <div class="badge bg-primary">Completado</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper bg-success mb-3">
+                            <i class="fas fa-code fa-2x text-white"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Flask Web App</h5>
+                        <p class="text-muted mb-3">
+                            Aplicación web moderna con Flask, Bootstrap y JavaScript.
+                        </p>
+                        <div class="badge bg-success">En Desarrollo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper bg-info mb-3">
+                            <i class="fas fa-database fa-2x text-white"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Base de Datos</h5>
+                        <p class="text-muted mb-3">
+                            Integración con bases de datos y modelos de datos avanzados.
+                        </p>
+                        <div class="badge bg-info">Próximamente</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper bg-warning mb-3">
+                            <i class="fas fa-mobile-alt fa-2x text-white"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Responsive Design</h5>
+                        <p class="text-muted mb-3">
+                            Diseños adaptables para todos los dispositivos y pantallas.
+                        </p>
+                        <div class="badge bg-warning">Planificado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tecnologías Section -->
+<section id="tecnologias" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Tecnologías Utilizadas</h2>
+            <p class="lead text-muted">Stack tecnológico moderno y herramientas de desarrollo</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="tech-card text-center p-4">
+                    <i class="fab fa-python fa-3x text-primary mb-3"></i>
+                    <h5 class="fw-bold mb-2">Python & Flask</h5>
+                    <p class="text-muted">Backend robusto con Flask framework y Python.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="tech-card text-center p-4">
+                    <i class="fab fa-js-square fa-3x text-warning mb-3"></i>
+                    <h5 class="fw-bold mb-2">JavaScript</h5>
+                    <p class="text-muted">Interactividad y dinamismo en el frontend.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="tech-card text-center p-4">
+                    <i class="fab fa-bootstrap fa-3x text-purple mb-3"></i>
+                    <h5 class="fw-bold mb-2">Bootstrap 5</h5>
+                    <p class="text-muted">Framework CSS para diseño responsive.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Método de Aprendizaje Section -->
+<section id="aprendizaje" class="py-5 bg-dark text-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Método de Aprendizaje Flexible</h2>
+            <p class="lead text-light">Enfoque práctico y adaptable para el desarrollo de habilidades</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon bg-primary mb-3">
+                        <i class="fas fa-lightbulb fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Aprendizaje Basado en Proyectos</h5>
+                    <p class="text-light">Desarrollo de aplicaciones reales para consolidar conocimientos teóricos.</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon bg-success mb-3">
+                        <i class="fas fa-code-branch fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Iteración Continua</h5>
+                    <p class="text-light">Mejora constante mediante feedback y refactorización.</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon bg-info mb-3">
+                        <i class="fas fa-users fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Colaboración</h5>
+                    <p class="text-light">Trabajo en equipo y revisión de código entre pares.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card p-3">
+                    <h2 class="display-4 fw-bold text-primary mb-1">500+</h2>
+                    <p class="mb-0 text-muted">Horas de código</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card p-3">
+                    <h2 class="display-4 fw-bold text-success mb-1">15+</h2>
+                    <p class="mb-0 text-muted">Proyectos completados</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card p-3">
+                    <h2 class="display-4 fw-bold text-warning mb-1">10+</h2>
+                    <p class="mb-0 text-muted">Tecnologías dominadas</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card p-3">
+                    <h2 class="display-4 fw-bold text-info mb-1">100%</h2>
+                    <p class="mb-0 text-muted">Satisfacción</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

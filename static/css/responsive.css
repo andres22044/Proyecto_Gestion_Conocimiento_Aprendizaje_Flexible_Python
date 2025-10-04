@@ -1,0 +1,385 @@
+/* Responsive Styles for FlexLearn Project */
+
+/* Extra small devices (phones, 576px and down) */
+@media (max-width: 576px) {
+    /* Hero Section */
+    .hero-section {
+        padding: 3rem 0 !important;
+    }
+    
+    .display-4 {
+        font-size: 2rem !important;
+    }
+    
+    .lead {
+        font-size: 1.1rem !important;
+    }
+    
+    .hero-image i {
+        font-size: 8rem !important;
+    }
+    
+    /* Navigation */
+    .navbar-brand {
+        font-size: 1.2rem !important;
+    }
+    
+    /* Cards */
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .icon-wrapper {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    
+    .icon-wrapper i {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Sections */
+    section {
+        padding: 3rem 0 !important;
+    }
+    
+    /* Buttons */
+    .btn-lg {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Stats */
+    .display-4 {
+        font-size: 2.5rem !important;
+    }
+    
+    .stat-card {
+        padding: 1rem !important;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 768px) {
+    .hero-section {
+        padding: 4rem 0 !important;
+    }
+    
+    .display-4 {
+        font-size: 2.8rem !important;
+    }
+    
+    .hero-image i {
+        font-size: 10rem !important;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 992px) {
+    .hero-section {
+        padding: 5rem 0 !important;
+    }
+    
+    .display-4 {
+        font-size: 3.2rem !important;
+    }
+    
+    /* Adjust card layouts for tablets */
+    .col-md-6 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1200px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+/* Mobile-first responsive utilities */
+@media (max-width: 768px) {
+    /* Text alignment */
+    .text-md-start {
+        text-align: center !important;
+    }
+    
+    .text-md-end {
+        text-align: center !important;
+    }
+    
+    /* Spacing adjustments */
+    .mb-md-0 {
+        margin-bottom: 1rem !important;
+    }
+    
+    .mt-md-0 {
+        margin-top: 1rem !important;
+    }
+    
+    /* Flexbox adjustments */
+    .d-md-flex {
+        display: block !important;
+    }
+    
+    .flex-md-row {
+        flex-direction: column !important;
+    }
+    
+    /* Navigation */
+    .navbar-collapse {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Hero section adjustments */
+    .min-vh-75 {
+        min-height: 60vh !important;
+    }
+    
+    /* Button groups */
+    .d-flex.gap-3 {
+        gap: 1rem !important;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .d-flex.gap-3 .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+    
+    /* Card layouts */
+    .row.g-4 {
+        margin: 0 -0.5rem;
+    }
+    
+    .row.g-4 > [class*="col-"] {
+        padding: 0 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Feature cards */
+    .feature-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Tech cards */
+    .tech-card {
+        margin-bottom: 1.5rem;
+        padding: 2rem 1rem !important;
+    }
+    
+    /* Stats grid */
+    .row.text-center .col-md-3 {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-section .row {
+        text-align: center;
+    }
+    
+    .hero-image {
+        margin-top: 3rem;
+    }
+    
+    /* Adjust card sizes for tablet */
+    .card-body {
+        padding: 2rem !important;
+    }
+}
+
+/* High-resolution displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .footer,
+    .btn {
+        display: none !important;
+    }
+    
+    .hero-section {
+        background: white !important;
+        color: black !important;
+        padding: 1rem 0 !important;
+    }
+    
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .card-hover:hover {
+        transform: none !important;
+    }
+    
+    .hero-image i {
+        animation: none !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    [data-bs-theme="auto"] {
+        --bg-color: #1a1a1a;
+        --text-color: #ffffff;
+        --card-bg: #2d2d2d;
+        --border-color: #404040;
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero-section {
+        padding: 2rem 0 !important;
+        min-height: 100vh !important;
+    }
+    
+    .min-vh-75 {
+        min-height: 100vh !important;
+    }
+    
+    .hero-image {
+        display: none;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .btn-lg {
+        padding: 0.6rem 1.2rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .display-4 {
+        font-size: 1.8rem !important;
+    }
+    
+    .display-5 {
+        font-size: 1.5rem !important;
+    }
+    
+    .display-6 {
+        font-size: 1.3rem !important;
+    }
+}
+
+/* Foldable devices */
+@media (max-width: 280px) {
+    .navbar-brand {
+        font-size: 1rem !important;
+    }
+    
+    .hero-section {
+        padding: 2rem 0 !important;
+    }
+    
+    .display-4 {
+        font-size: 1.5rem !important;
+    }
+    
+    .lead {
+        font-size: 1rem !important;
+    }
+}
+
+/* Grid system adjustments */
+@media (max-width: 768px) {
+    .row-cols-md-2 > * {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    
+    .row-cols-lg-3 > * {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    
+    .row-cols-xl-4 > * {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+}
+
+/* Form responsiveness */
+@media (max-width: 768px) {
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group .form-control,
+    .input-group .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Navigation mobile improvements */
+@media (max-width: 768px) {
+    .navbar-toggler {
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .navbar-nav {
+        text-align: center;
+    }
+    
+    .nav-item {
+        margin: 0.25rem 0;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+    }
+}
+
+/* Footer mobile adjustments */
+@media (max-width: 768px) {
+    .footer .row {
+        text-align: center;
+    }
+    
+    .footer .text-md-end {
+        margin-top: 1rem;
+    }
+}
