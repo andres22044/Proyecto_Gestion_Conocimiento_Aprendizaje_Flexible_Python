@@ -1,213 +1,228 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio - Aprendizaje Flexible en Programación{% endblock %}
+{% block title %}Inicio - FlexLearn: Análisis Predictivo{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section py-5">
+<section class="py-5 text-white" style="background: linear-gradient(135deg, #002d5c, #007bff);">
     <div class="container">
-        <div class="row align-items-center min-vh-75">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">
-                    Aprendizaje <span class="text-primary">Flexible</span> en Programación
+        <div class="row align-items-center py-5">
+            <div class="col-lg-7">
+                <span class="badge bg-info text-dark mb-3 text-uppercase fw-bold shadow-sm">Proyecto de la Universidad de Cundinamarca</span>
+                <h1 class="display-3 fw-bolder mb-4">
+                    Diagnóstico <span class="text-warning">Inteligente</span> en <br>Programación Python
                 </h1>
-                <p class="lead mb-4 text-muted">
-                    Un proyecto educativo que combina teoría y práctica para dominar 
-                    el desarrollo web moderno con Flask y tecnologías actuales.
+                <p class="lead fs-5 mb-4 opacity-75">
+                    Este proyecto, desarrollado en el marco del **Programa de Ingeniería en Sistemas y Computación**, utiliza **Machine Learning** para identificar las falencias específicas de los estudiantes en la programación Python y les guía con una ruta de estudio totalmente personalizada.
                 </p>
+
+                <div class="bg-dark p-4 rounded shadow-lg mb-5 border border-warning">
+                    <h6 class="text-warning text-center mb-3 fw-bold">PROCESO DE CLASIFICACIÓN DEL ERROR</h6>
+                    <div class="d-flex justify-content-between align-items-center text-center">
+                        
+                        <div class="text-light">
+                            <i class="fas fa-file-code fa-2x mb-2 text-info"></i>
+                            <p class="small mb-0">Código del Alumno</p>
+                        </div>
+                        
+                        <i class="fas fa-arrow-right fa-2x text-white-50"></i>
+                        
+                        <div class="text-light">
+                            <i class="fas fa-brain fa-2x mb-2 text-warning"></i>
+                            <p class="small mb-0">Modelo ML</p>
+                        </div>
+                        
+                        <i class="fas fa-arrow-right fa-2x text-white-50"></i>
+                        
+                        <div class="text-light">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2 text-danger"></i>
+                            <p class="small mb-0">Diagnóstico Dirigido</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex gap-3 flex-wrap">
-                    <a href="#proyectos" class="btn btn-primary btn-lg px-4">
-                        <i class="fas fa-rocket me-2"></i>Ver Proyectos
+                    <a href="#diagnostico-ml" class="btn btn-warning btn-lg px-5 shadow-lg fw-bold text-dark">
+                        <i class="fas fa-bug me-2"></i> Ver Tipos de Falencia
                     </a>
-                    <a href="#aprendizaje" class="btn btn-outline-secondary btn-lg px-4">
-                        <i class="fas fa-info-circle me-2"></i>Método de Aprendizaje
+                    <a href="#equipo" class="btn btn-outline-light btn-lg px-5 fw-bold">
+                        <i class="fas fa-users me-2"></i> Conocer el Equipo
                     </a>
                 </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <div class="hero-image mt-5 mt-lg-0">
-                    <i class="fas fa-laptop-code text-primary" style="font-size: 12rem;"></i>
-                </div>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <i class="fas fa-brain fa-10x text-info opacity-50" style="filter: drop-shadow(0 0 15px rgba(23, 162, 184, 0.5));"></i>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Proyectos Section -->
-<section id="proyectos" class="py-5 bg-light">
+<section id="manifiesto" class="py-5 bg-white border-bottom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-2 text-center mb-4 mb-lg-0">
+                <img src="{{ url_for('static', filename='imagenes/Escudo_UDEC.png') }}" alt="Escudo Universidad de Cundinamarca" class="img-fluid" style="max-height: 120px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));">
+            </div>
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold mb-3">Manifiesto del Proyecto Académico</h2>
+                <p class="lead text-muted">
+                    Este proyecto es una iniciativa del **Programa de Ingeniería en Sistemas y Computación de la Universidad de Cundinamarca**. Parte de la hipótesis fundamental de que los errores en la programación no son aleatorios, sino patrones detectables. Buscamos implementar modelos de **Machine Learning** para clasificar y predecir los puntos débiles de cada estudiante, transformando el error en una oportunidad para un aprendizaje dirigido y eficiente.
+                </p>
+            </div>
+            <div class="col-lg-2 text-center d-none d-lg-block">
+                <i class="fas fa-code-branch fa-3x text-success"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="conceptos" class="py-5 bg-light border-bottom">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Proyectos Desarrollados</h2>
-            <p class="lead text-muted">Explora los diferentes módulos y aplicaciones creadas durante el aprendizaje</p>
+            <h2 class="display-5 fw-bold mb-3">Conceptos Centrales del Proyecto</h2>
+            <p class="lead text-muted">Tecnologías y enfoques que impulsan FlexLearn.</p>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <span class="badge bg-primary fs-5 py-2 px-3 shadow-sm">Machine Learning</span>
+            <span class="badge bg-success fs-5 py-2 px-3 shadow-sm">Análisis Predictivo</span>
+            <span class="badge bg-info fs-5 py-2 px-3 shadow-sm">Diagnóstico Automatizado</span>
+            <span class="badge bg-warning text-dark fs-5 py-2 px-3 shadow-sm">Educación Personalizada</span>
+            <span class="badge bg-secondary fs-5 py-2 px-3 shadow-sm">Desarrollo Web (Flask)</span>
+            <span class="badge bg-dark fs-5 py-2 px-3 shadow-sm">Python</span>
+        </div>
+    </div>
+</section>
+
+<section id="diagnostico-ml" class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center mb-5">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold mb-3">Módulos de Falencias</h2>
+                <p class="lead text-muted">Explora los algoritmos y los problemas que resuelven en el contexto educativo.</p>
+            </div>
         </div>
 
         <div class="row g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-wrapper bg-primary mb-3">
-                            <i class="fas fa-chart-line fa-2x text-white"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">ML Supervisado</h5>
-                        <p class="text-muted mb-3">
-                            Análisis de casos reales de machine learning en diferentes industrias.
-                        </p>
-                        <div class="badge bg-primary">Completado</div>
-                    </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 p-3 shadow-lg hover-scale text-center">
+                    <i class="fas fa-keyboard fa-3x text-primary mb-3"></i>
+                    <h5 class="fw-bold mb-3 text-dark">Detección de Sintaxis</h5>
+                    <p class="text-muted small">
+                        **Enfoque:** Clasifica errores simples (olvido de `:` o `()`, indentación incorrecta) para reforzar la memoria muscular del código.
+                    </p>
+                    <div class="badge bg-primary">Modelo: Regresión Logística</div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-wrapper bg-success mb-3">
-                            <i class="fas fa-code fa-2x text-white"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Flask Web App</h5>
-                        <p class="text-muted mb-3">
-                            Aplicación web moderna con Flask, Bootstrap y JavaScript.
-                        </p>
-                        <div class="badge bg-success">En Desarrollo</div>
-                    </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 p-3 shadow-lg hover-scale text-center">
+                    <i class="fas fa-bezier-curve fa-3x text-success mb-3"></i>
+                    <h5 class="fw-bold mb-3 text-dark">Análisis de Lógica</h5>
+                    <p class="text-muted small">
+                        **Enfoque:** Clasifica fallas en el flujo de control (`if/else`, `for`, `while`) para identificar problemas de razonamiento algorítmico y estructura de programas.
+                    </p>
+                    <div class="badge bg-success">Modelo: Árboles de Decisión</div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-wrapper bg-info mb-3">
-                            <i class="fas fa-database fa-2x text-white"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Base de Datos</h5>
-                        <p class="text-muted mb-3">
-                            Integración con bases de datos y modelos de datos avanzados.
-                        </p>
-                        <div class="badge bg-info">Próximamente</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-wrapper bg-warning mb-3">
-                            <i class="fas fa-mobile-alt fa-2x text-white"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Responsive Design</h5>
-                        <p class="text-muted mb-3">
-                            Diseños adaptables para todos los dispositivos y pantallas.
-                        </p>
-                        <div class="badge bg-warning">Planificado</div>
-                    </div>
+            <div class="col-md-6 col-lg-4 mx-auto">
+                <div class="card h-100 border-0 p-3 shadow-lg hover-scale text-center">
+                    <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                    <h5 class="fw-bold mb-3 text-dark">Métrica de Progreso</h5>
+                    <p class="text-muted small">
+                        **Enfoque:** Monitorea las tasas de error a lo largo del tiempo para asignar un **índice de riesgo** al estudiante y adaptar dinámicamente la dificultad del curso.
+                    </p>
+                    <div class="badge bg-info">Índice de Riesgo</div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Tecnologías Section -->
-<section id="tecnologias" class="py-5">
+<section id="metodo" class="py-5 bg-dark-blue text-white">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Tecnologías Utilizadas</h2>
-            <p class="lead text-muted">Stack tecnológico moderno y herramientas de desarrollo</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="tech-card text-center p-4">
-                    <i class="fab fa-python fa-3x text-primary mb-3"></i>
-                    <h5 class="fw-bold mb-2">Python & Flask</h5>
-                    <p class="text-muted">Backend robusto con Flask framework y Python.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="tech-card text-center p-4">
-                    <i class="fab fa-js-square fa-3x text-warning mb-3"></i>
-                    <h5 class="fw-bold mb-2">JavaScript</h5>
-                    <p class="text-muted">Interactividad y dinamismo en el frontend.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="tech-card text-center p-4">
-                    <i class="fab fa-bootstrap fa-3x text-purple mb-3"></i>
-                    <h5 class="fw-bold mb-2">Bootstrap 5</h5>
-                    <p class="text-muted">Framework CSS para diseño responsive.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Método de Aprendizaje Section -->
-<section id="aprendizaje" class="py-5 bg-dark text-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Método de Aprendizaje Flexible</h2>
-            <p class="lead text-light">Enfoque práctico y adaptable para el desarrollo de habilidades</p>
+            <h2 class="display-5 fw-bold mb-3 text-warning">El Método FlexLearn</h2>
+            <p class="lead text-light opacity-75">Tres pasos clave para transformar tu curva de aprendizaje.</p>
         </div>
 
         <div class="row g-4">
             <div class="col-lg-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon bg-primary mb-3">
-                        <i class="fas fa-lightbulb fa-2x text-white"></i>
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <div class="bg-primary d-inline-block p-3 rounded-circle mb-3">
+                        <h3 class="fw-bold mb-0 text-white">1</h3>
                     </div>
-                    <h5 class="fw-bold mb-3">Aprendizaje Basado en Proyectos</h5>
-                    <p class="text-light">Desarrollo de aplicaciones reales para consolidar conocimientos teóricos.</p>
+                    <h5 class="fw-bold mb-3">Diagnóstico Preciso</h5>
+                    <p class="small text-light">Analizamos tu código con modelos de ML para construir un perfil detallado de tus falencias en programación Python.</p>
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon bg-success mb-3">
-                        <i class="fas fa-code-branch fa-2x text-white"></i>
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <div class="bg-success d-inline-block p-3 rounded-circle mb-3">
+                        <h3 class="fw-bold mb-0 text-white">2</h3>
                     </div>
-                    <h5 class="fw-bold mb-3">Iteración Continua</h5>
-                    <p class="text-light">Mejora constante mediante feedback y refactorización.</p>
+                    <h5 class="fw-bold mb-3">Adaptación Curricular</h5>
+                    <p class="small text-light">El sistema ajusta el orden de los temas, la dificultad de los ejercicios y la secuencia de aprendizaje para enfocarse en tus áreas débiles.</p>
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon bg-info mb-3">
-                        <i class="fas fa-users fa-2x text-white"></i>
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <div class="bg-warning d-inline-block p-3 rounded-circle mb-3">
+                        <h3 class="fw-bold mb-0 text-dark">3</h3>
                     </div>
-                    <h5 class="fw-bold mb-3">Colaboración</h5>
-                    <p class="text-light">Trabajo en equipo y revisión de código entre pares.</p>
+                    <h5 class="fw-bold mb-3">Refuerzo Dirigido</h5>
+                    <p class="small text-light">Proporcionamos ejercicios de práctica intensiva y retroalimentación específica hasta que el modelo confirme el dominio del tema, cerrando el ciclo de aprendizaje.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Stats Section -->
-<section class="py-5">
+<section id="equipo" class="py-5 bg-light">
     <div class="container">
-        <div class="row text-center">
-            <div class="col-md-3 col-6 mb-4">
-                <div class="stat-card p-3">
-                    <h2 class="display-4 fw-bold text-primary mb-1">500+</h2>
-                    <p class="mb-0 text-muted">Horas de código</p>
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Los Creadores del Proyecto</h2>
+            <p class="lead text-muted">Estudiantes de la Universidad de Cundinamarca - Programa Ingeniería en Sistemas y Computación</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
+                    <img src="{{ url_for('static', filename='imagenes/gojo.jpeg') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez" style="width: 150px; height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="fw-bolder mb-1">Andres Felipe Venegas Hernandez</h5>
+                        <p class="text-primary small fw-bold">Investigador y Desarrollador Principal</p>
+                        <p class="text-muted small">
+                            Lideró el diseño de la arquitectura Flask, la implementación del modelo de Regresión Logística para detección de sintaxis y la estructura general de la aplicación.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3 col-6 mb-4">
-                <div class="stat-card p-3">
-                    <h2 class="display-4 fw-bold text-success mb-1">15+</h2>
-                    <p class="mb-0 text-muted">Proyectos completados</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-4">
-                <div class="stat-card p-3">
-                    <h2 class="display-4 fw-bold text-warning mb-1">10+</h2>
-                    <p class="mb-0 text-muted">Tecnologías dominadas</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-4">
-                <div class="stat-card p-3">
-                    <h2 class="display-4 fw-bold text-info mb-1">100%</h2>
-                    <p class="mb-0 text-muted">Satisfacción</p>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
+                    <img src="{{ url_for('static', filename='imagenes/sukuna.jpeg') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Cristian Camilo Naranjo Muñoz" style="width: 150px; height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="fw-bolder mb-1">Cristian Camilo Naranjo Muñoz</h5>
+                        <p class="text-success small fw-bold">Analista de Datos y Diseño UI/UX</p>
+                        <p class="text-muted small">
+                            Responsable de la preparación del dataset, la implementación del Árbol de Decisión para análisis lógico y la construcción de la interfaz de usuario con Bootstrap.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<section id="contacto" class="py-5 text-center bg-primary text-white">
+    <div class="container">
+        <h2 class="display-6 fw-bold mb-3">¡Estamos listos para la presentación!</h2>
+        <p class="lead mb-4 opacity-75">
+            Para dudas sobre el código, la metodología o los modelos predictivos, contáctenos o visite nuestro repositorio.
+        </p>
+        <a href="#equipo" class="btn btn-warning btn-lg px-5 rounded-pill shadow-lg text-dark fw-bold">
+            <i class="fas fa-envelope me-2"></i> Contactar al Equipo
+        </a>
     </div>
 </section>
 {% endblock %}

@@ -1,93 +1,112 @@
 <!DOCTYPE html>
 <html lang="es" data-bs-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Aprendizaje Flexible - Programación{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FlexLearn: Aprendizaje Flexible{% endblock %}</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+
+    <style>
+        /* Definiciones de color para la paleta azul/cian */
+        :root {
+            --bs-primary: #007bff; /* Azul estándar */
+            --bs-info: #17a2b8; /* Cian para acentos */
+            --bs-dark-blue: #002d5c; /* Azul oscuro para fondos de impacto */
+        }
+        .text-primary { color: var(--bs-primary) !important; }
+        .bg-primary { background-color: var(--bs-primary) !important; }
+        .bg-dark-blue { background-color: var(--bs-dark-blue) !important; }
+
+        /* Estilos para reducir el espaciado vertical del Navbar */
+        .navbar {
+            padding-top: 0.5rem !important; /* Ajusta el padding superior del navbar */
+            padding-bottom: 0.5rem !important; /* Ajusta el padding inferior del navbar */
+        }
+        .navbar-brand {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.25rem !important;
+        }
+        .navbar-nav .nav-link {
+            padding-top: 0.4rem !important; /* Reduce el padding superior de los enlaces */
+            padding-bottom: 0.4rem !important; /* Reduce el padding inferior de los enlaces */
+        }
+        .navbar-toggler {
+            padding: 0.25rem 0.5rem !important; /* Ajusta el padding del botón del toggler */
+        }
+    </style>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light" style="font-family: 'Inter', sans-serif;">
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center fw-bold" href="{{ url_for('index') }}">
-                <i class="fas fa-code me-2 text-primary"></i>
-                <span class="text-primary">Flex</span>Learn
-            </a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold text-dark" href="{{ url_for('index') }}">
+                <i class="fas fa-code me-2 text-primary fa-lg"></i>
+                <span class="text-primary">Flex</span>Learn
+            </a>
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url_for('index') }}">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="#diagnostico-ml">
+                            <i class="fas fa-microchip me-1"></i> Diagnóstico ML
+                        </a>
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">
-                            <i class="fas fa-home me-1"></i> Inicio
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#proyectos">
-                            <i class="fas fa-project-diagram me-1"></i> Proyectos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#tecnologias">
-                            <i class="fas fa-cogs me-1"></i> Tecnologías
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#aprendizaje">
-                            <i class="fas fa-graduation-cap me-1"></i> Método
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+                        <a class="nav-link text-dark" href="#conceptos">
+                            <i class="fas fa-lightbulb me-1"></i> Conceptos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="#metodo">
+                            <i class="fas fa-graduation-cap me-1"></i> Método
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary text-white ms-lg-3 px-3 py-2 rounded-pill" href="#equipo">
+                            <i class="fas fa-users me-1"></i> Equipo
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Content -->
-    <main class="flex-grow-1">
-        {% block content %}{% endblock %}
-    </main>
+        <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
 
-    <!-- Footer -->
-    <footer class="footer bg-dark text-white py-4 mt-auto">
-        <div class="container">
+        <footer class="footer bg-dark-blue text-white py-3 mt-auto">
+        <div class="container">
             <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h5 class="mb-2">
-                        <i class="fas fa-code me-2 text-primary"></i>
-                        FlexLearn
-                    </h5>
-                    <p class="mb-0 text-light">Aprendizaje Flexible en Programación</p>
-                </div>
-                <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                    <p class="mb-1">&copy; 2025 Todos los derechos reservados</p>
-                    <p class="mb-0 small text-light">Desarrollado con Flask y Bootstrap</p>
+                <div class="col-12 text-center small text-white-50">
+                    <p class="mb-0">&copy; {{ current_year }} FlexLearn - Proyecto Final de Machine Learning.</p>
                 </div>
             </div>
-        </div>
-    </footer>
+        </div>
+    </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JavaScript -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
