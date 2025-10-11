@@ -27,23 +27,50 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('index') }}">
-                                <i class="fas fa-home me-1"></i> Inicio
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('sobre_proyecto') }}">
-                                <i class="fas fa-info-circle me-1"></i> Sobre el Proyecto
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('sobre_proyecto') }}#contacto">
-                                <i class="fas fa-envelope me-1"></i> Contacto
-                            </a>
-                        </li>
-                    </ul>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ms-auto">
+        
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index') }}">
+                <i class="fas fa-home me-1"></i> Inicio
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('sobre_proyecto') }}">
+                <i class="fas fa-info-circle me-1"></i> Sobre el Proyecto
+            </a>
+        </li>
+
+        {% if not logged_in %}
+        <li class="nav-item">
+            <a class="nav-link btn btn-outline-primary btn-sm ms-2" href="{{ url_for('login') }}">
+                <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link btn btn-primary btn-sm ms-2" href="{{ url_for('register') }}">
+                <i class="fas fa-user-plus me-1"></i> Registrarse
+            </a>
+        </li>
+        {% else %}
+        
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-circle me-1"></i> Hola, {{ current_user }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">
+                    <i class="fas fa-cog me-2"></i> Configuración
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                </a></li>
+            </ul>
+        </li>
+        {% endif %}
+    </ul>
+</div>
                 </div>
             </div>
         </nav>
