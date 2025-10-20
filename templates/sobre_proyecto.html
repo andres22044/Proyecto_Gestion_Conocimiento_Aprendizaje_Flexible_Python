@@ -27,11 +27,11 @@
             <div class="col-lg-8">
                 <h2 class="display-6 fw-bold mb-3">Manifiesto del Proyecto Académico</h2>
                 <p class="lead text-muted">
-                    Este proyecto es una iniciativa del <span class="fw-bold">Programa de Ingeniería en Sistemas y Computación de la Universidad de Cundinamarca.</span> Parte de la hipótesis fundamental de que los errores en la programación no son aleatorios, sino patrones detectables. Buscamos implementar modelos de <span class="fw-bold">Machine Learning</span> para clasificar y predecir los puntos débiles de cada estudiante, transformando el error en una oportunidad para un aprendizaje dirigido y eficiente.
+                    Este proyecto es una iniciativa del <span class="fw-bold"> Universidad de Cundinamarca/Universidad Nacional de Loja</span> Parte de la hipótesis fundamental de que los errores en la programación no son aleatorios, sino patrones detectables. Buscamos implementar modelos de <span class="fw-bold">Machine Learning</span> para clasificar y predecir los puntos débiles de cada estudiante, transformando el error en una oportunidad para un aprendizaje dirigido y eficiente.
                 </p>
             </div>
-            <div class="col-lg-2 text-center d-none d-lg-block">
-                <i class="fas fa-code-branch fa-3x text-success"></i>
+            <div class="col-lg-2 text-center mb-4 mb-lg-0">
+                <img src="{{ url_for('static', filename='imagenes/ESCUDO_UNL.png') }}" alt="Escudo Universidad de Cundinamarca" class="img-fluid" style="max-height: 120px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));">
             </div>
         </div>
     </div>
@@ -150,7 +150,7 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold mb-3">Los Creadores del Proyecto</h2>
-            <p class="lead text-muted">Estudiantes de la Universidad de Cundinamarca - Programa Ingeniería en Sistemas y Computación</p>
+            <p class="lead text-muted">Estudiantes de la Universidad de Cundinamarca Extension Chia - Universidad Nacional de Loja</p>
         </div>
         
         <div class="row g-4 justify-content-center">
@@ -175,6 +175,33 @@
                         <p class="text-success small fw-bold">Analista de Datos y Diseño UI/UX</p>
                         <p class="text-muted small">
                             Responsable de la preparación del dataset, la implementación del Árbol de Decisión para análisis lógico y la construcción de la interfaz de usuario con Bootstrap.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
+                    <img src="{{ url_for('static', filename='imagenes/panda.png') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez" style="width: 150px; height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="fw-bolder mb-1">Luis Eduardo Maza Piloso</h5>
+                        <p class="text-primary small fw-bold">Investigador y Desarrollador Principal</p>
+                        <p class="text-muted small">
+                            Lideró el diseño de la arquitectura Flask, la implementación del modelo de Regresión Logística para detección de sintaxis y la estructura general de la aplicación.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
+                    <img src="{{ url_for('static', filename='imagenes/toji.png') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez" style="width: 150px; height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="fw-bolder mb-1">Yosmany Giomar Narvaez Guarnizo</h5>
+                        <p class="text-primary small fw-bold">Investigador y Desarrollador Principal</p>
+                        <p class="text-muted small">
+                            Lideró el diseño de la arquitectura Flask, la implementación del modelo de Regresión Logística para detección de sintaxis y la estructura general de la aplicación.
                         </p>
                     </div>
                 </div>

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 DB_CONFIG = {
     'host': '127.0.0.1',  
     'user': 'root',       
-    'password': '', # La contraseña que usaste en phpMyAdmin
+    'password': '', 
     'database': 'usuarios_aula_espejo' # El nombre de la BD que creaste
 }
 # ------------------------------------
