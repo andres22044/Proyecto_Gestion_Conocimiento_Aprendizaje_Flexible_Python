@@ -1,296 +1,218 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio - FlexLearn: Análisis Predictivo{% endblock %}
+{% block title %}PLIX: Tu hidratación inteligente va contigo | Tomatodo Compactable{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="py-5 text-white" style="background: linear-gradient(135deg, #002d5c, #007bff);">
+<section id="hero" class="py-5 text-white hero-section min-vh-75 d-flex align-items-center" 
+    style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));">
     <div class="container">
         <div class="row align-items-center py-5">
             <div class="col-lg-7">
                 <h1 class="display-3 fw-bolder mb-4">
-                    Diagnóstico <span class="text-warning">Inteligente</span> en <br>Programación Python
+                    PLIX. Tu hidratación <span class="text-warning">Inteligente</span> va contigo.
                 </h1>
                 <p class="lead fs-5 mb-4 opacity-75">
-                    Este proyecto, desarrollado en el marco del <strong>Programa de Ingeniería en Sistemas y Computación</strong>, utiliza <strong>Machine Learning</strong> para identificar las falencias específicas de los estudiantes en la programación Python y les guía con una ruta de estudio totalmente personalizada.
+                    El tomatodo compactable que combina portabilidad extrema, tecnología de **sensor de temperatura** y un compromiso real con el planeta.
                 </p>
 
-                <div class="bg-dark p-4 rounded shadow-lg mb-4 border border-warning">
-                    <h6 class="text-warning text-center mb-3 fw-bold">PROCESO DE CLASIFICACIÓN DEL ERROR</h6>
-                    <div class="d-flex justify-content-between align-items-center text-center">
-                        <div class="text-light">
-                            <i class="fas fa-file-code fa-2x mb-2 text-info"></i>
-                            <p class="small mb-0">Código del Alumno</p>
-                        </div>
-                        <i class="fas fa-arrow-right fa-2x text-white-50"></i>
-                        <div class="text-light">
-                            <i class="fas fa-brain fa-2x mb-2 text-warning"></i>
-                            <p class="small mb-0">Modelo ML</p>
-                        </div>
-                        <i class="fas fa-arrow-right fa-2x text-white-50"></i>
-                        <div class="text-light">
-                            <i class="fas fa-exclamation-triangle fa-2x mb-2 text-danger"></i>
-                            <p class="small mb-0">Diagnóstico Dirigido</p>
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-temperature-high fa-2x text-warning me-3"></i>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Sensor Térmico Digital</h5>
+                            <p class="small opacity-75 mb-0">Nunca más te quemarás. Conoce la temperatura al instante.</p>
                         </div>
                     </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-compress-arrows-alt fa-2x text-info me-3"></i>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Diseño Ultra-Compactable</h5>
+                            <p class="small opacity-75 mb-0">Se pliega para caber en el 50% del espacio de tu mochila o bolso.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 d-flex gap-3">
+                    <a href="#precio" class="btn btn-warning btn-lg shadow-lg fw-bold text-dark">
+                        <i class="fas fa-bolt me-2"></i> ¡Comprar PLIX Ahora!
+                    </a>
+                    <a href="#tecnologia" class="btn btn-outline-light btn-lg fw-bold">
+                        <i class="fas fa-microchip me-2"></i> Ver Tecnología
+                    </a>
                 </div>
             </div>
             
-            <div class="col-lg-5 text-center mt-4 mt-lg-0">
-                <i class="fas fa-brain fa-10x text-info opacity-50 mb-4" style="filter: drop-shadow(0 0 15px rgba(23, 162, 184, 0.5));"></i>
-
-                <div class="d-grid gap-3 mx-auto" style="max-width: 300px;">
-                    <span class="badge bg-info text-dark text-uppercase fw-bold shadow-sm py-2">
-                        Proyecto de la Universidad de Cundinamarca
-                    </span>
-                    
-                    <a href="#crisp-ml" class="btn btn-warning d-block shadow-lg fw-bold text-dark">
-                        <i class="fas fa-project-diagram me-2"></i> Metodología CRISP-ML
-                    </a>
-                    <a href="#sobre-proyecto" class="btn btn-outline-light d-block fw-bold">
-                        <i class="fas fa-info-circle me-2"></i> Sobre el Proyecto
-                    </a>
-                </div>
+            <div class="col-lg-5 text-center mt-5 mt-lg-0">
+                <img src="{{ url_for('static', filename='imagenes/plix_producto.png') }}" alt="Imagen Tomatodo PLIX" class="img-fluid rounded-3 shadow-lg hover-scale" style="max-height: 400px; object-fit: cover;">
+                
+                <span class="badge bg-warning text-dark text-uppercase fw-bold shadow-sm py-2 mt-4">
+                    Materiales Seguros y Libres de BPA
+                </span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CRISP-ML Methodology Section -->
-<section id="crisp-ml" class="py-5 bg-white border-bottom">
+<section id="tecnologia" class="py-5 bg-white border-bottom">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3 text-primary">Metodología CRISP-ML</h2>
-            <p class="lead text-muted">Fase 1: Entendimiento del Negocio y los Datos</p>
+            <h2 class="display-5 fw-bold mb-3 text-primary">Tecnología Inteligente en tu Tapa</h2>
+            <p class="lead text-muted">La innovación que te protege y facilita tu vida activa.</p>
         </div>
 
-        <div class="row mb-5">
-            <div class="col-lg-12">
-                <div class="card border-0 shadow-lg">
-                    <div class="card-header bg-primary text-white py-3">
-                        <h4 class="mb-0"><i class="fas fa-bullseye me-2"></i>Objetivos de Negocio</h4>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-4">Traducir la necesidad educativa en metas concretas de aprendizaje adaptativo mediante el desarrollo de un sistema de machine learning que:</p>
-                        
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-check-circle text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Detección y Análisis de Errores</h6>
-                                        <p class="small text-muted mb-0">Módulo para identificar errores comunes en sintaxis, lógica y ejecución con retroalimentación inmediata</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-check-circle text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Recomendaciones Personalizadas</h6>
-                                        <p class="small text-muted mb-0">Ejercicios, ejemplos y recursos adaptados al desempeño individual</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-check-circle text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Mejora del Rendimiento</h6>
-                                        <p class="small text-muted mb-0">Aumentar la comprensión y dominio conceptual de los estudiantes</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-check-circle text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Apoyo Docente</h6>
-                                        <p class="small text-muted mb-0">Detección de dificultades frecuentes para intervención temprana</p>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="row mb-5 justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-lg p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                            <i class="fas fa-thermometer-half fa-5x text-warning"></i>
+                        </div>
+                        <div class="col-md-9">
+                            <h4 class="fw-bold mb-2 text-dark">Sensor Digital de Precisión</h4>
+                            <p class="text-muted mb-0">
+                                La tapa incorpora un sensor digital de alto rendimiento que muestra la temperatura exacta del líquido. Perfecto para deportistas, café para llevar o para garantizar que los tés de hierbas estén a la temperatura ideal de consumo.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Preguntas Clave -->
-        <div class="row mb-5">
-            <div class="col-lg-12">
-                <div class="card border-0 shadow-lg">
-                    <div class="card-header bg-success text-white py-3">
-                        <h4 class="mb-0"><i class="fas fa-question-circle me-2"></i>Preguntas Clave</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start p-3 bg-light rounded">
-                                    <i class="fas fa-search text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-2">Análisis Conceptual</h6>
-                                        <p class="small text-muted mb-0">¿Qué conceptos fundamentales (condicionales, ciclos, funciones, tipos de datos) generan más errores?</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start p-3 bg-light rounded">
-                                    <i class="fas fa-chart-line text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-2">Impacto en el Progreso</h6>
-                                        <p class="small text-muted mb-0">¿Cómo afectan estos errores al progreso y comprensión del estudiante?</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start p-3 bg-light rounded">
-                                    <i class="fas fa-cogs text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-2">Personalización</h6>
-                                        <p class="small text-muted mb-0">¿Qué ejercicios o recursos pueden recomendarse automáticamente según el desempeño individual?</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-start p-3 bg-light rounded">
-                                    <i class="fas fa-chart-bar text-success mt-1 me-3"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-2">Métricas de Evaluación</h6>
-                                        <p class="small text-muted mb-0">¿Qué indicadores permiten evaluar la mejora del aprendizaje?</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Evaluación de Datos y Viabilidad -->
         <div class="row g-4">
-            <!-- Evaluación de Datos -->
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-lg h-100">
-                    <div class="card-header bg-info text-white py-3">
-                        <h4 class="mb-0"><i class="fas fa-database me-2"></i>Evaluación de Datos</h4>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3 text-dark">Fuentes de Datos:</h6>
-                        <ul class="list-unstyled mb-4">
-                            <li class="mb-2"><i class="fas fa-code text-info me-2"></i>Códigos enviados por estudiantes</li>
-                            <li class="mb-2"><i class="fas fa-history text-info me-2"></i>Registros de interacción (intentos, tiempo, dificultad)</li>
-                            <li class="mb-2"><i class="fas fa-bug text-info me-2"></i>Logs de ejecución de código (errores)</li>
-                            <li class="mb-2"><i class="fas fa-chart-bar text-info me-2"></i>Resultados de ejercicios y calificaciones</li>
-                        </ul>
-                        
-                        <h6 class="fw-bold mb-3 text-dark">Criterios de Evaluación:</h6>
-                        <div class="d-flex align-items-center mb-2">
-                            <span class="badge bg-success me-2">Calidad</span>
-                            <span class="small text-muted">Datos completos y sin ruido. Normalización de errores</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-2">
-                            <span class="badge bg-primary me-2">Relevancia</span>
-                            <span class="small text-muted">Centrados en errores de programación básica</span>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-warning me-2">Suficiencia</span>
-                            <span class="small text-muted">Cantidad representativa de estudiantes y ejercicios</span>
-                        </div>
-                    </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="p-3 bg-light rounded h-100 shadow-sm hover-scale">
+                    <i class="fas fa-mug-hot fa-3x text-primary mb-3"></i>
+                    <h5 class="fw-bold mb-1">Para Café y Bebidas Frías</h5>
+                    <p class="small text-muted mb-0">Asegura que tu bebida se mantenga caliente o fría por más tiempo. El sensor evita quemaduras accidentales.</p>
                 </div>
             </div>
-
-            <!-- Análisis de Viabilidad -->
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-lg h-100">
-                    <div class="card-header bg-warning text-dark py-3">
-                        <h4 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Análisis de Viabilidad</h4>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3 text-dark">Viabilidad Técnica:</h6>
-                        <ul class="list-unstyled mb-4">
-                            <li class="mb-2"><i class="fas fa-robot text-warning me-2"></i>Modelos de clasificación para patrones de error</li>
-                            <li class="mb-2"><i class="fas fa-project-diagram text-warning me-2"></i>Análisis de código (AST, regex, NLP)</li>
-                        </ul>
-
-                        <h6 class="fw-bold mb-3 text-dark">Alcance Organizacional:</h6>
-                        <div class="bg-light p-3 rounded mb-3">
-                            <h6 class="fw-bold text-dark mb-2">Tiempo: 1 mes</h6>
-                            <ul class="small text-muted mb-0">
-                                <li>Plataforma de registro de desempeño y errores</li>
-                                <li>Recomendaciones automáticas básicas</li>
-                                <li>Módulo de métricas de impacto</li>
-                                <li>Colaboración docente para validación</li>
-                            </ul>
-                        </div>
-
-                        <h6 class="fw-bold mb-3 text-dark">Gestión de Riesgos:</h6>
-                        <div class="small">
-                            <div class="d-flex align-items-start mb-2">
-                                <i class="fas fa-exclamation-triangle text-danger mt-1 me-2"></i>
-                                <div>
-                                    <span class="fw-bold">Escasez de datos:</span> Recolección prospectiva durante piloto
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-start mb-2">
-                                <i class="fas fa-shield-alt text-primary mt-1 me-2"></i>
-                                <div>
-                                    <span class="fw-bold">Privacidad:</span> Consentimiento, anonimización, acuerdos de uso
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-start">
-                                <i class="fas fa-code text-info mt-1 me-2"></i>
-                                <div>
-                                    <span class="fw-bold">Errores no uniformes:</span> Agrupación manual inicial
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="p-3 bg-light rounded h-100 shadow-sm hover-scale">
+                    <i class="fas fa-weight-hanging fa-3x text-info mb-3"></i>
+                    <h5 class="fw-bold mb-1">Diseño Plegable y Ligero</h5>
+                    <p class="small text-muted mb-0">Construcción en silicona de grado alimenticio y materiales no tóxicos. Pesa muy poco y reduce su tamaño al vaciarse.</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Conclusión -->
-        <div class="row mt-5">
-            <div class="col-lg-12">
-                <div class="card border-0 bg-primary text-white shadow-lg">
-                    <div class="card-body text-center py-4">
-                        <h4 class="fw-bold mb-3"><i class="fas fa-flag-checkered me-2"></i>Conclusión de la Fase 1</h4>
-                        <p class="lead mb-0">
-                            Esta fase permite comprender las necesidades educativas y sentar las bases del sistema adaptativo. 
-                            Garantiza que el modelo de machine learning esté alineado con los objetivos pedagógicos y las condiciones reales del entorno académico.
-                        </p>
-                    </div>
+            <div class="col-md-6 col-lg-4 mx-auto">
+                <div class="p-3 bg-light rounded h-100 shadow-sm hover-scale">
+                    <i class="fas fa-heartbeat fa-3x text-success mb-3"></i>
+                    <h5 class="fw-bold mb-1">Cuidado de la Salud (BPA-Free)</h5>
+                    <p class="small text-muted mb-0">Fabricado con materiales libres de Bisfenol A (BPA), alineado con las tendencias de salud y seguridad en el consumo diario.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Navigation to Project Details -->
-<section class="py-4 bg-light border-bottom">
-    <div class="container">
-        <div class="text-center">
-            <a href="#sobre-proyecto" class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-arrow-down me-2"></i> Conocer Más Sobre el Proyecto
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Sobre el Proyecto Section (simplificada para enlace) -->
-<section id="sobre-proyecto" class="py-5 bg-white">
+<section id="segmento" class="py-5 bg-light border-bottom">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Sobre el Proyecto</h2>
-            <p class="lead text-muted">Conoce los detalles completos de nuestra iniciativa</p>
+            <h2 class="display-5 fw-bold mb-3 text-primary">Diseñado para tu Ritmo de Vida</h2>
+            <p class="lead text-muted">PLIX encaja perfectamente con tu estilo: activo, consciente y tecnológico.</p>
         </div>
-        <div class="text-center">
-            <a href="{{ url_for('sobre_proyecto') }}" class="btn btn-primary btn-lg px-5">
-                <i class="fas fa-external-link-alt me-2"></i> Ver Detalles Completos del Proyecto
-            </a>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg text-center bg-white hover-scale">
+                    <div class="card-header bg-warning text-dark py-3">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-running me-2"></i> Gen Z & Millennials</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-2 text-dark">Estudiantes y Deportistas</h6>
+                        <ul class="list-unstyled small text-muted text-start ps-3">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Valoración del diseño moderno y la portabilidad.</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Necesidad de hidratación constante en el gym o universidad.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg text-center bg-white hover-scale">
+                    <div class="card-header bg-info text-white py-3">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-briefcase me-2"></i> Consumidor Consciente</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-2 text-dark">Tecnología y Sostenibilidad</h6>
+                        <ul class="list-unstyled small text-muted text-start ps-3">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Disposición a invertir en productos con valor añadido (tecnología).</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Compromiso con reducir la huella de plástico (reutilizable).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
+<section id="precio" class="py-5 bg-dark-blue text-white text-center">
+    <div class="container">
+        <h2 class="display-5 fw-bold mb-4 text-warning">¡Lleva la Innovación a tu Rutina!</h2>
+        <p class="lead mb-4 opacity-75">
+            Una solución premium y funcional que promueve un estilo de vida más activo y responsable. El precio se justifica por la tecnología de sensor y los materiales de alta calidad, libres de BPA.
+        </p>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="p-5 rounded-3 shadow-lg" style="background-color: #004a80;">
+                    <h3 class="fw-bold mb-3 text-white">PLIX - Edición Estándar</h3>
+                    <p class="display-4 fw-bolder text-warning mb-3">$24.99</p>
+                    <p class="small mb-4 text-light opacity-75">Incluye Tomatodo Compactable y Tapa con Sensor Térmico Digital. Garantía de 1 año.</p>
+                    <a href="#" class="btn btn-warning btn-lg px-5 fw-bold text-dark shadow-lg">
+                        <i class="fas fa-shopping-basket me-2"></i> Comprar Ahora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="faq" class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3 text-primary">Preguntas Frecuentes (FAQ)</h2>
+            <p class="lead text-muted">Resolvemos tus dudas más comunes sobre PLIX.</p>
+        </div>
+
+        <div class="accordion accordion-flush" id="accordionFAQ">
+            <div class="accordion-item shadow-sm mb-3 rounded-3">
+                <h2 class="accordion-header" id="flush-headingOne">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                        ¿De qué material está hecho PLIX? ¿Es libre de BPA?
+                    </button>
+                </h2>
+                <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body text-muted">
+                        PLIX está fabricado con **silicona de grado alimenticio y acero inoxidable**, asegurando que el producto es completamente **libre de Bisfenol A (BPA)**. Priorizamos tu salud y la calidad.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item shadow-sm mb-3 rounded-3">
+                <h2 class="accordion-header" id="flush-headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                        ¿Cómo funciona el sensor de temperatura de la tapa?
+                    </button>
+                </h2>
+                <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body text-muted">
+                        La tapa contiene un **sensor digital de alta sensibilidad** que, al ser tocado, detecta la temperatura interna del líquido y la muestra en una pequeña pantalla LED en la superficie. No necesita baterías externas y tiene una larga vida útil.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item shadow-sm mb-3 rounded-3">
+                <h2 class="accordion-header" id="flush-headingThree">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                        ¿Cuál es la ventaja de que sea compactable?
+                    </button>
+                </h2>
+                <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body text-muted">
+                        La principal ventaja es la **portabilidad**. Cuando PLIX está vacío, puedes plegarlo fácilmente, **reduciendo su tamaño hasta en un 50%**. Esto lo hace ideal para viajeros, estudiantes y deportistas que necesitan ahorrar espacio en su bolso o mochila.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

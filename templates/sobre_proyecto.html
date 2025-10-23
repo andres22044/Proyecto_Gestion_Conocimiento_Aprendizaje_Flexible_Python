@@ -1,232 +1,153 @@
 {% extends "base.html" %}
 
-{% block title %}Sobre el Proyecto - FlexLearn: Análisis Predictivo{% endblock %}
+{% block title %}Sostenibilidad y Misión - PLIX{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="py-5 text-white" style="background: linear-gradient(135deg, #002d5c, #007bff);">
+<section class="py-5 text-white" style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));">
     <div class="container">
         <div class="row align-items-center py-4">
-            <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bolder mb-4">Sobre el Proyecto FlexLearn</h1>
+            <div class="col-lg-10 mx-auto text-center">
+                <h1 class="display-4 fw-bolder mb-4">Sostenibilidad y Misión PLIX</h1>
                 <p class="lead fs-5 mb-0 opacity-75">
-                    Detalles completos de la iniciativa académica de la Universidad de Cundinamarca
+                    Nuestro compromiso es ofrecer soluciones de hidratación inteligentes que protejan el planeta y tu
+                    salud.
                 </p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Manifiesto Section -->
 <section id="manifiesto" class="py-5 bg-white border-bottom">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-2 text-center mb-4 mb-lg-0">
-                <img src="{{ url_for('static', filename='imagenes/Escudo_UDEC.png') }}" alt="Escudo Universidad de Cundinamarca" class="img-fluid" style="max-height: 120px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));">
+            <div class="col-lg-6 text-center mb-4 mb-lg-0">
+                <img src="{{ url_for('static', filename='imagenes/sostenibilidad.png') }}" 
+                     alt="Manifiesto de Hidratación Consciente" 
+                     class="img-fluid" 
+                     style="max-height: 400px; filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.1));">
             </div>
-            <div class="col-lg-8">
-                <h2 class="display-6 fw-bold mb-3">Manifiesto del Proyecto Académico</h2>
+            <div class="col-lg-6">
+                <h2 class="display-6 fw-bold mb-3 text-primary">Manifiesto de Hidratación Consciente</h2>
                 <p class="lead text-muted">
-                    Este proyecto es una iniciativa del <span class="fw-bold"> Universidad de Cundinamarca/Universidad Nacional de Loja</span> Parte de la hipótesis fundamental de que los errores en la programación no son aleatorios, sino patrones detectables. Buscamos implementar modelos de <span class="fw-bold">Machine Learning</span> para clasificar y predecir los puntos débiles de cada estudiante, transformando el error en una oportunidad para un aprendizaje dirigido y eficiente.
+                    [cite_start]PLIX nace de la necesidad de fusionar **comodidad, tecnología y responsabilidad ambiental**[cite: 31, 191]. Parte
+                    de la convicción de que las botellas reutilizables deben ser tan prácticas como funcionales.
                 </p>
-            </div>
-            <div class="col-lg-2 text-center mb-4 mb-lg-0">
-                <img src="{{ url_for('static', filename='imagenes/ESCUDO_UNL.png') }}" alt="Escudo Universidad de Cundinamarca" class="img-fluid" style="max-height: 120px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> **Reducción de Plásticos:**
+                        [cite_start]Promovemos el fin de las botellas de un solo uso[cite: 69].</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> **Diseño Plegable:** Máxima
+                        [cite_start]portabilidad para un estilo de vida sin límites[cite: 32, 57, 59].</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> **Salud Primero:** Uso
+                        [cite_start]exclusivo de materiales libres de BPA[cite: 53, 55, 190].</li>
+                </ul>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Conceptos Section -->
-<section id="conceptos" class="py-5 bg-light border-bottom">
+<section id="identidad" class="py-5 bg-light border-bottom">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Conceptos Centrales del Proyecto</h2>
-            <p class="lead text-muted">Tecnologías y enfoques que impulsan FlexLearn.</p>
-        </div>
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-            <span class="badge bg-primary fs-5 py-2 px-3 shadow-sm">Machine Learning</span>
-            <span class="badge bg-success fs-5 py-2 px-3 shadow-sm">Análisis Predictivo</span>
-            <span class="badge bg-info fs-5 py-2 px-3 shadow-sm">Diagnóstico Automatizado</span>
-            <span class="badge bg-warning text-dark fs-5 py-2 px-3 shadow-sm">Educación Personalizada</span>
-            <span class="badge bg-secondary fs-5 py-2 px-3 shadow-sm">Desarrollo Web (Flask)</span>
-            <span class="badge bg-dark fs-5 py-2 px-3 shadow-sm">Python</span>
-        </div>
-    </div>
-</section>
-
-<!-- Módulos de Falencias Section -->
-<section id="diagnostico-ml" class="py-5 bg-white">
-    <div class="container">
-        <div class="row align-items-center mb-5">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="display-5 fw-bold mb-3">Módulos de Falencias</h2>
-                <p class="lead text-muted">Explora los algoritmos y los problemas que resuelven en el contexto educativo.</p>
-            </div>
+            <h2 class="display-5 fw-bold mb-3 text-primary">Nuestra Identidad: Modernidad y Conexión</h2>
+            <p class="lead text-muted">El diseño de PLIX refleja los valores de su público: Gen Z y Millennials.</p>
         </div>
 
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 p-3 shadow-lg hover-scale text-center">
-                    <i class="fas fa-keyboard fa-3x text-primary mb-3"></i>
-                    <h5 class="fw-bold mb-3 text-dark">Detección de Sintaxis</h5>
-                    <p class="text-muted small">
-                        <span class="fw-bold">Enfoque:</span> Clasifica errores simples (olvido de `:` o `()`, indentación incorrecta) para reforzar la memoria muscular del código.
-                    </p>
-                    <div class="badge bg-primary">Modelo: Regresión Logística</div>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 hover-scale">
+                    <h5 class="fw-bold mb-2"><i class="fas fa-compress me-2 text-primary"></i> PLI-X (Plegable)</h5>
+                    <p class="small text-muted mb-0">El nombre enfatiza la cualidad **plegable** que define nuestra
+                        principal ventaja competitiva.</p>
                 </div>
             </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 p-3 shadow-lg hover-scale text-center">
-                    <i class="fas fa-bezier-curve fa-3x text-success mb-3"></i>
-                    <h5 class="fw-bold mb-3 text-dark">Análisis de Lógica</h5>
-                    <p class="text-muted small">
-                        <span class="fw-bold">Enfoque:</span> Clasifica fallas en el flujo de control (`if/else`, `for`, `while`) para identificar problemas de razonamiento algorítmico y estructura de programas.
-                    </p>
-                    <div class="badge bg-success">Modelo: Árboles de Decisión</div>
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 hover-scale">
+                    <h5 class="fw-bold mb-2"><i class="fas fa-bolt me-2 text-warning"></i> Diseño Juvenil</h5>
+                    <p class="small text-muted mb-0">Colores **Azul Profundo y Naranja Acento** para una estética
+                        dinámica, tecnológica y actual.</p>
                 </div>
             </div>
-
-            <div class="col-md-6 col-lg-4 mx-auto">
-                <div class="card h-100 border-0 p-3 shadow-lg hover-scale text-center">
-                    <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
-                    <h5 class="fw-bold mb-3 text-dark">Métrica de Progreso</h5>
-                    <p class="text-muted small">
-                        <span class="fw-bold">Enfoque:</span> Monitorea las tasas de error a lo largo del tiempo para asignar un índice de riesgo al estudiante y adaptar dinámicamente la dificultad del curso.
-                    </p>
-                    <div class="badge bg-info">Índice de Riesgo</div>
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 hover-scale">
+                    <h5 class="fw-bold mb-2"><i class="fas fa-quote-right me-2 text-info"></i> Nuestro Eslogan</h5>
+                    <p class="small text-muted mb-0 fw-bold">"Donde vayas, tu hidratación va contigo."</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Método FlexLearn Section -->
-<section id="metodo" class="py-5 bg-dark-blue text-white">
+<section id="equipo" class="py-5 bg-dark-blue text-white">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3 text-warning">El Método FlexLearn</h2>
-            <p class="lead text-light opacity-75">Tres pasos clave para transformar tu curva de aprendizaje.</p>
+            <h2 class="display-5 fw-bold mb-3 text-warning">Los Emprendedores detrás de la Idea</h2>
+            <p class="lead text-light opacity-75">Un proyecto nacido de la innovación académica en Loja y la Universidad
+                de Cundinamarca.</p>
         </div>
 
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
-                    <div class="bg-primary d-inline-block p-2 rounded-circle mb-3 d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
-                        <h3 class="fw-bold mb-0 text-white">1</h3>
-                    </div>
-                    
-                    <h5 class="fw-bold mb-3">Diagnóstico Preciso</h5>
-                    <p class="small text-light">Analizamos tu código con modelos de ML para construir un perfil detallado de tus falencias en programación Python.</p>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
-                    <div class="bg-primary d-inline-block p-2 rounded-circle mb-3 d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
-                        <h3 class="fw-bold mb-0 text-white">2</h3>
-                    </div>
-                    <h5 class="fw-bold mb-3">Adaptación Curricular</h5>
-                    <p class="small text-light">El sistema ajusta el orden de los temas, la dificultad de los ejercicios y la secuencia de aprendizaje para enfocarse en tus áreas débiles.</p>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
-                    <div class="bg-primary d-inline-block p-2 rounded-circle mb-3 d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
-                        <h3 class="fw-bold mb-0 text-white">3</h3>
-                    </div>
-                    <h5 class="fw-bold mb-3">Refuerzo Dirigido</h5>
-                    <p class="small text-light">Proporcionamos ejercicios de práctica intensiva y retroalimentación específica hasta que el modelo confirme el dominio del tema, cerrando el ciclo de aprendizaje.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Equipo Section -->
-<section id="equipo" class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Los Creadores del Proyecto</h2>
-            <p class="lead text-muted">Estudiantes de la Universidad de Cundinamarca Extension Chia - Universidad Nacional de Loja</p>
-        </div>
-        
         <div class="row g-4 justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
-                    <img src="{{ url_for('static', filename='imagenes/gojo.jpeg') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez" style="width: 150px; height: 150px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="fw-bolder mb-1">Andres Felipe Venegas Hernandez</h5>
-                        <p class="text-primary small fw-bold">Investigador y Desarrollador Principal</p>
-                        <p class="text-muted small">
-                            Lideró el diseño de la arquitectura Flask, la implementación del modelo de Regresión Logística para detección de sintaxis y la estructura general de la aplicación.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/panda.png') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Luis Eduardo Maza Piloso"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Luis Eduardo Maza Piloso</h5>
+                    <p class="small text-warning fw-bold mb-1">Co-Fundador & Estratega</p>
+                    <p class="small text-light opacity-75 mb-0">Ideación del concepto compactable e integración del
+                        sensor térmico.</p>
                 </div>
             </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
-                    <img src="{{ url_for('static', filename='imagenes/sukuna.jpeg') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Cristian Camilo Naranjo Muñoz" style="width: 150px; height: 150px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="fw-bolder mb-1">Cristian Camilo Naranjo Muñoz</h5>
-                        <p class="text-success small fw-bold">Analista de Datos y Diseño UI/UX</p>
-                        <p class="text-muted small">
-                            Responsable de la preparación del dataset, la implementación del Árbol de Decisión para análisis lógico y la construcción de la interfaz de usuario con Bootstrap.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/toji.png') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Yosmany Giomar Narvaez Guarnizo"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Yosmany G. Narvaez G.</h5>
+                    <p class="small text-warning fw-bold mb-1">Investigación y Viabilidad</p>
+                    <p class="small text-light opacity-75 mb-0">Estudio de mercado, viabilidad económica y análisis de
+                        materiales (BPA).</p>
                 </div>
             </div>
-
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
-                    <img src="{{ url_for('static', filename='imagenes/panda.png') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez" style="width: 150px; height: 150px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="fw-bolder mb-1">Luis Eduardo Maza Piloso</h5>
-                        <p class="text-primary small fw-bold">Investigador y Desarrollador Principal</p>
-                        <p class="text-muted small">
-                            Lideró el diseño de la arquitectura Flask, la implementación del modelo de Regresión Logística para detección de sintaxis y la estructura general de la aplicación.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/gojo.jpeg') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Andres F. Venegas H.</h5>
+                    <p class="small text-warning fw-bold mb-1">Marketing Digital</p>
+                    <p class="small text-light opacity-75 mb-0">Diseño de la identidad visual y la estrategia de
+                        lanzamiento (Gen Z/Millennials).</p>
                 </div>
             </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg p-3 text-center hover-scale">
-                    <img src="{{ url_for('static', filename='imagenes/toji.png') }}" class="rounded-circle mx-auto mt-3 mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez" style="width: 150px; height: 150px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="fw-bolder mb-1">Yosmany Giomar Narvaez Guarnizo</h5>
-                        <p class="text-primary small fw-bold">Investigador y Desarrollador Principal</p>
-                        <p class="text-muted small">
-                            Lideró el diseño de la arquitectura Flask, la implementación del modelo de Regresión Logística para detección de sintaxis y la estructura general de la aplicación.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/sukuna.jpeg') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Cristian Camilo Naranjo Muñoz"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Cristian C. Naranjo M.</h5>
+                    <p class="small text-warning fw-bold mb-1">Desarrollo Web</p>
+                    <p class="small text-light opacity-75 mb-0">Responsable de la estructura web, el diseño UX/UI y la
+                        integración de Bootstrap.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Contacto Section -->
-<section id="contacto" class="py-5 text-center bg-primary text-white">
+<section id="contacto" class="py-5 text-center bg-warning text-dark">
     <div class="container">
-        <h2 class="display-6 fw-bold mb-3">¡Estamos listos para la presentación!</h2>
+        <h2 class="display-6 fw-bold mb-3">¡Síguenos y sé parte del cambio!</h2>
         <p class="lead mb-4 opacity-75">
-            Para dudas sobre el código, la metodología o los modelos predictivos, contáctenos o visite nuestro repositorio.
+            Únete a nuestra comunidad en redes sociales para retos de hidratación y sostenibilidad.
         </p>
-        <a href="#equipo" class="btn btn-warning btn-lg px-5 rounded-pill shadow-lg text-dark fw-bold">
-            <i class="fas fa-envelope me-2"></i> Contactar al Equipo
-        </a>
+        <div class="d-flex justify-content-center gap-4">
+            <a href="#" class="btn btn-primary btn-lg rounded-circle" style="width: 60px; height: 60px;"><i
+                    class="fab fa-instagram fa-2x"></i></a>
+            <a href="#" class="btn btn-primary btn-lg rounded-circle" style="width: 60px; height: 60px;"><i
+                    class="fab fa-tiktok fa-2x"></i></a>
+            <a href="#" class="btn btn-primary btn-lg rounded-circle" style="width: 60px; height: 60px;"><i
+                    class="fab fa-facebook fa-2x"></i></a>
+        </div>
     </div>
 </section>
-
-<!-- Back to Top -->
-<div class="text-center py-4 bg-light">
-    <a href="#top" class="btn btn-outline-primary">
-        <i class="fas fa-arrow-up me-2"></i> Volver al Inicio
-    </a>
-</div>
 {% endblock %}
