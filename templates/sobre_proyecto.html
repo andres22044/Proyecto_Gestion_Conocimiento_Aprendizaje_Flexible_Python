@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Sostenibilidad y Misión - PLIX{% endblock %}
+
+{% block content %}
+<section class="py-5 text-white" style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));">
+    <div class="container">
+        <div class="row align-items-center py-4">
+            <div class="col-lg-10 mx-auto text-center">
+                <h1 class="display-4 fw-bolder mb-4">Sostenibilidad y Misión PLIX</h1>
+                <p class="lead fs-5 mb-0 opacity-75">
+                    Nuestro compromiso es ofrecer soluciones de hidratación inteligentes que protejan el planeta y tu
+                    salud.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="manifiesto" class="py-5 bg-white border-bottom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-center mb-4 mb-lg-0">
+                <img src="{{ url_for('static', filename='imagenes/sostenibilidad.jpg') }}" 
+                     alt="Manifiesto de Hidratación Consciente" 
+                     class="img-fluid" 
+                     style="max-height: 400px; filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.1));">
+            </div>
+            <div class="col-lg-6">
+                <h2 class="display-6 fw-bold mb-3 text-primary">Manifiesto de Hidratación Consciente</h2>
+                <p class="lead text-muted">
+                    [cite_start]PLIX nace de la necesidad de fusionar **comodidad, tecnología y responsabilidad ambiental**[cite: 31, 191]. Parte
+                    de la convicción de que las botellas reutilizables deben ser tan prácticas como funcionales.
+                </p>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> **Reducción de Plásticos:**
+                        [cite_start]Promovemos el fin de las botellas de un solo uso[cite: 69].</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> **Diseño Plegable:** Máxima
+                        [cite_start]portabilidad para un estilo de vida sin límites[cite: 32, 57, 59].</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> **Salud Primero:** Uso
+                        [cite_start]exclusivo de materiales libres de BPA[cite: 53, 55, 190].</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="identidad" class="py-5 bg-light border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3 text-primary">Nuestra Identidad: Modernidad y Conexión</h2>
+            <p class="lead text-muted">El diseño de PLIX refleja los valores de su público: Gen Z y Millennials.</p>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 hover-scale">
+                    <h5 class="fw-bold mb-2"><i class="fas fa-compress me-2 text-primary"></i> PLI-X (Plegable)</h5>
+                    <p class="small text-muted mb-0">El nombre enfatiza la cualidad **plegable** que define nuestra
+                        principal ventaja competitiva.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 hover-scale">
+                    <h5 class="fw-bold mb-2"><i class="fas fa-bolt me-2 text-warning"></i> Diseño Juvenil</h5>
+                    <p class="small text-muted mb-0">Colores **Azul Profundo y Naranja Acento** para una estética
+                        dinámica, tecnológica y actual.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 hover-scale">
+                    <h5 class="fw-bold mb-2"><i class="fas fa-quote-right me-2 text-info"></i> Nuestro Eslogan</h5>
+                    <p class="small text-muted mb-0 fw-bold">"Donde vayas, tu hidratación va contigo."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="equipo" class="py-5 bg-dark-blue text-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3 text-warning">Los Emprendedores detrás de la Idea</h2>
+            <p class="lead text-light opacity-75">Un proyecto nacido de la innovación académica en Loja y la Universidad
+                de Cundinamarca.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/Luis_Eduardo.jpg') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Luis Eduardo Maza Piloso"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Luis Eduardo Maza Piloso</h5>
+                    <p class="small text-warning fw-bold mb-1">Co-Fundador & Estratega</p>
+                    <p class="small text-light opacity-75 mb-0">Ideación del concepto compactable e integración del
+                        sensor térmico.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/Yosmany.jpg') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Yosmany Giomar Narvaez Guarnizo"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Yosmany G. Narvaez G.</h5>
+                    <p class="small text-warning fw-bold mb-1">Investigación y Viabilidad</p>
+                    <p class="small text-light opacity-75 mb-0">Estudio de mercado, viabilidad económica y análisis de
+                        materiales (BPA).</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/andres.jpg') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Andrés Felipe Venegas Hernandez"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Andres F. Venegas H.</h5>
+                    <p class="small text-warning fw-bold mb-1">Marketing Digital</p>
+                    <p class="small text-light opacity-75 mb-0">Diseño de la identidad visual y la estrategia de
+                        lanzamiento (Gen Z/Millennials).</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="p-4 rounded shadow bg-dark text-center h-100 border border-info">
+                    <img src="{{ url_for('static', filename='imagenes/Camilo.jpg') }}"
+                        class="rounded-circle mx-auto mb-3 shadow" alt="Foto de Cristian Camilo Naranjo Muñoz"
+                        style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">Cristian C. Naranjo M.</h5>
+                    <p class="small text-warning fw-bold mb-1">Desarrollo Web</p>
+                    <p class="small text-light opacity-75 mb-0">Responsable de la estructura web, el diseño UX/UI y la
+                        integración de Bootstrap.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="contacto" class="py-5 text-center bg-warning text-dark">
+    <div class="container">
+        <h2 class="display-6 fw-bold mb-3">¡Síguenos y sé parte del cambio!</h2>
+        <p class="lead mb-4 opacity-75">
+            Únete a nuestra comunidad en redes sociales para retos de hidratación y sostenibilidad.
+        </p>
+        <div class="d-flex justify-content-center gap-4">
+            <a href="#" class="btn btn-primary btn-lg rounded-circle" style="width: 60px; height: 60px;"><i
+                    class="fab fa-instagram fa-2x"></i></a>
+            <a href="#" class="btn btn-primary btn-lg rounded-circle" style="width: 60px; height: 60px;"><i
+                    class="fab fa-tiktok fa-2x"></i></a>
+            <a href="#" class="btn btn-primary btn-lg rounded-circle" style="width: 60px; height: 60px;"><i
+                    class="fab fa-facebook fa-2x"></i></a>
+        </div>
+    </div>
+</section>
+{% endblock %}

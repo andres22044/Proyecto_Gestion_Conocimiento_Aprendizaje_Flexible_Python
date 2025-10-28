@@ -1,0 +1,104 @@
+/* Estilos Globales para PLIX: Compactable, Inteligente, Sostenible */
+
+/* Definiciones de color para la paleta PLIX (Azul Oscuro, Cian, Naranja Acento) */
+:root {
+    --bs-primary: #002d5c; /* Azul Profundo de PLIX (Fondo de impacto) */
+    --bs-info: #17a2b8;    /* Cian para detalles tecnológicos */
+    --bs-warning: #ff7e00; /* Naranja Acento de PLIX (CTA, sensor) */
+    --bs-dark-blue: #002d5c; /* Alias del primario para fondos oscuros */
+    --bs-secondary-dark: #343a40; /* Mantenemos un color oscuro para texto/fondos */
+}
+.text-primary { color: var(--bs-primary) !important; }
+.bg-primary { background-color: var(--bs-primary) !important; }
+.bg-dark-blue { 
+    background-color: var(--bs-dark-blue) !important; 
+    background: linear-gradient(135deg, var(--bs-dark-blue), #004488) !important; /* Degradado de marca */
+}
+.text-warning { color: var(--bs-warning) !important; }
+.bg-warning { background-color: var(--bs-warning) !important; }
+.text-info { color: var(--bs-info) !important; }
+.bg-info { background-color: var(--bs-info) !important; }
+
+
+/* Efecto de sombra y hover para tarjetas (se mantienen) */
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important; 
+}
+
+/* Efecto hover-scale para los módulos (se mantienen) */
+.hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Estilo para el pie de página secundario (solo si usas el color) */
+.bg-secondary-dark {
+    background-color: var(--bs-secondary-dark) !important;
+}
+
+/* Asegura que el ícono de Font Awesome en la sección Hero se vea bien */
+.fa-10x {
+    font-size: 10em;
+}
+
+/* Estilos para reducir el espaciado vertical del Navbar (se mantienen) */
+.navbar {
+    padding-top: 0.5rem !important; 
+    padding-bottom: 0.5rem !important; 
+}
+.navbar-brand {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+.navbar-nav .nav-link {
+    padding-top: 0.4rem !important; 
+    padding-bottom: 0.4rem !important; 
+}
+.navbar-toggler {
+    padding: 0.25rem 0.5rem !important; 
+}
+
+/* Estilos para las cards específicas del proyecto (se mantienen) */
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.shadow-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Mejoras para la navegación (se adaptan colores) */
+.navbar {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    border-radius: 6px;
+    margin: 0 2px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(0, 45, 92, 0.1); /* Usamos el azul oscuro de PLIX en hover */
+    color: var(--bs-primary) !important;
+}
+
+/* Estilos para badges (se mantienen) */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
