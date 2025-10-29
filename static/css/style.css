@@ -102,3 +102,61 @@
     font-weight: 500;
     letter-spacing: 0.5px;
 }
+
+/* =============================================================== */
+/* ESTILOS PARA EL SIMULADOR TPU                   */
+/* =============================================================== */
+
+.gauge-container {
+    width: 150px;
+    height: 75px;
+    position: relative;
+    overflow: hidden;
+    /* margin: 0 auto; (se controla en el html) */
+}
+
+.gauge-bg {
+    width: 150px;
+    height: 75px;
+    border-radius: 75px 75px 0 0;
+    background-color: #e9ecef; /* color 'light' de Bootstrap */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.gauge-fill {
+    width: 150px;
+    height: 75px;
+    border-radius: 75px 75px 0 0;
+    /* El color de fondo (bg-success, etc.) se aplica con JS */
+    background-color: #dc3545; /* Color 'danger' por defecto */
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: bottom center;
+    transition: transform 0.5s ease-out, background-color 0.5s ease-out;
+    transform: rotate(0deg); /* 0% */
+}
+
+.gauge-cover {
+    width: 120px;
+    height: 60px;
+    border-radius: 60px 60px 0 0;
+    background-color: #ffffff; /* Color 'white' (fondo de la card) */
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 10;
+}
+
+.gauge-label {
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 11;
+    font-size: 1.5rem; /* 24px */
+    font-weight: 600;
+}

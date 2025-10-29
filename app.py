@@ -1,14 +1,21 @@
 import mysql.connector
 import os
 import logging
-# Nuevas importaciones necesarias para el login
-from flask import Flask, render_template, request, redirect, url_for, session
+import pandas as pd
+import numpy as np
+import warnings
+import time 
+
+# Importamos tu clase de modelo
+from XGBoostModel import XGBoostTPUPropertyPredictor
+
+# Modificamos la importación de Flask para incluir todo lo necesario
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.security import generate_password_hash, check_password_hash
-# Importamos check_password_hash para verificar la contraseña del login
 
 app = Flask(__name__)
-# Usamos una variable de entorno para la clave secreta. ¡Reemplázala en producción!
+# Usamos una variable de entorno para la clave secreta.
 app.secret_key = os.environ.get('SECRET_KEY', 'tu_clave_secreta_aqui_para_el_login') 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
@@ -19,198 +26,191 @@ logger = logging.getLogger(__name__)
 # =================================================================
 #                         CONFIGURACIÓN DE LA BASE DE DATOS
 # =================================================================
-
-# --- PARÁMETROS DE CONEXIÓN A MySQL (WAMP) ---
 DB_CONFIG = {
     'host': '127.0.0.1',  
     'user': 'root',       
     'password': '', 
-    'database': 'usuarios_aula_espejo' # El nombre de la BD que creaste
+    'database': 'usuarios_aula_espejo'
 }
-# ------------------------------------
 
 def get_db_connection():
     """Establece y retorna la conexión a la base de datos."""
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
+        # No es necesario loggear esto en cada conexión, solo si falla
         return conn
     except mysql.connector.Error as err:
-        logger.error(f"Error al conectar a MySQL: {err}")
+        logger.error(f"Error al conectar a la base de datos: {err}")
         return None
 
 # =================================================================
-#                           MANEJADORES DE ERRORES
+#                         CARGA GLOBAL DEL MODELO (¡NUEVO!)
 # =================================================================
-# (Se mantienen tus manejadores de errores 404, 500, RequestEntityTooLarge, Exception)
+# Esto se ejecuta UNA SOLA VEZ cuando inicias el servidor.
+# Mantenemos el modelo entrenado en memoria.
+print("="*50)
+print("INICIANDO SERVIDOR FLASK...")
+print("Cargando y entrenando el modelo XGBoost...")
+print("Esto puede tardar unos segundos...")
+warnings.filterwarnings('ignore', category=UserWarning)
 
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('pagina_error.html', 
-                          error_title="Página no encontrada",
-                          error_message="La página que buscas no existe.",
-                          error_code=404), 404
+# Crear una instancia de tu predictor
+predictor = XGBoostTPUPropertyPredictor(random_state=42)
 
-@app.errorhandler(500)
-def internal_error(error):
-    logger.error(f'Server Error: {error}')
-    return render_template('pagina_error.html',
-                          error_title="Error interno del servidor",
-                          error_message="Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.",
-                          error_code=500), 500
-
-@app.errorhandler(RequestEntityTooLarge)
-def too_large(error):
-    return render_template('pagina_error.html',
-                          error_title="Archivo demasiado grande",
-                          error_message="El archivo enviado supera el límite de tamaño permitido.",
-                          error_code=413), 413
-
-@app.errorhandler(Exception)
-def handle_exception(error):
-    logger.error(f'Unhandled Exception: {error}')
-    return render_template('pagina_error.html',
-                          error_title="Error inesperado",
-                          error_message="Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.",
-                          error_code=500), 500
+# Cargar los datos (asegúrate que 'dataset_ml_final.csv' esté en la misma carpeta que 'app.py')
+try:
+    predictor.load_data(filepath='dataset_ml_final.csv')
+except FileNotFoundError:
+    print("\n" + "!"*50)
+    print("ERROR FATAL: No se encontró 'dataset_ml_final.csv'.")
+    print("Asegúrate de que 'dataset_ml_final.csv' esté en la misma carpeta que 'app.py'.")
+    print("El servidor no puede iniciar sin el modelo.")
+    print("!"*50 + "\n")
+    exit() # Hacemos que la app falle si no encuentra el dataset
+    
+predictor.train_final_model()
+print("="*50)
+print("MODELO ENTRENADO Y LISTO.")
+print("="*50)
 
 # =================================================================
-#                              RUTAS DE AUTENTICACIÓN
+#                             RUTAS DE LA APLICACIÓN
 # =================================================================
+
+@app.route('/')
+def home():
+    """Ruta de inicio, redirige al login si no hay sesión."""
+    if 'username' in session:
+        return render_template('index.html')
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Si el usuario ya está logueado, lo redirigimos a la página principal
-    if 'username' in session:
-        return redirect(url_for('index'))
-        
-    error = None
+    """Maneja el inicio de sesión del usuario."""
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         
         conn = get_db_connection()
-        if conn is None:
-            # Si no hay conexión a la BD, mostramos un error
-            error = "Error: No se pudo conectar a la base de datos."
-            return render_template('login.html', error=error)
-
+        if not conn:
+            return render_template('login.html', error="Error de conexión con la base de datos.")
+        
         cursor = conn.cursor(dictionary=True)
-        
-        # Consultar el usuario en la tabla 'users'
-        query = "SELECT username, password_hash FROM users WHERE username = %s"
-        cursor.execute(query, (username,))
+        cursor.execute("SELECT * FROM usuarios WHERE username = %s", (username,))
         user = cursor.fetchone()
-        
         cursor.close()
         conn.close()
-
-        # Validar credenciales
-        if user and check_password_hash(user['password_hash'], password):
-            # Login exitoso: Guardamos el usuario en la sesión
+        
+        if user and check_password_hash(user['password'], password):
             session['username'] = user['username']
-            return redirect(url_for('index'))
+            session['user_id'] = user['id']
+            logger.info(f"Usuario {username} ha iniciado sesión.")
+            return redirect(url_for('home'))
         else:
-            error = "Usuario o contraseña incorrectos."
+            logger.warning(f"Intento de login fallido para el usuario {username}.")
+            return render_template('login.html', error="Usuario o contraseña incorrectos")
             
-    # Mostrar el formulario de login (Método GET)
-    return render_template('login.html', error=error)
-
-
-# app.py
-
-# ... (Tus funciones de conexión, manejadores de error, etc.)
-
-# =================================================================
-#                              RUTAS DE AUTENTICACIÓN
-# =================================================================
-
-# ... (Tu ruta /login)
+    return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Opcional: Si el usuario ya está logueado, no debería ver el formulario de registro.
-    if 'username' in session:
-        return redirect(url_for('index'))
-        
-    error = None
+    """Maneja el registro de nuevos usuarios."""
     if request.method == 'POST':
-        # 1. Obtener datos del formulario
         username = request.form['username']
-        email = request.form['email']
         password = request.form['password']
-        
-        # 2. Generar el Hash Seguro de la Contraseña (¡CRUCIAL!)
-        password_hash = generate_password_hash(password)
+        hashed_password = generate_password_hash(password)
         
         conn = get_db_connection()
-        if conn is None:
-            error = "Error: No se pudo conectar a la base de datos."
-            return render_template('register.html', error=error)
-
-        cursor = conn.cursor()
-        
-        try:
-            # 3. Insertar el nuevo usuario en la BD
-            # Usamos %s como marcador de posición para evitar inyección SQL
-            query = """
-            INSERT INTO users (username, email, password_hash)
-            VALUES (%s, %s, %s)
-            """
-            # El orden de los valores debe coincidir con el orden de las columnas en la consulta
-            cursor.execute(query, (username, email, password_hash))
-            conn.commit()
+        if not conn:
+            return render_template('register.html', error="Error de conexión con la base de datos.")
             
-            # Registro exitoso: Redirigir directamente al login (o a la página de inicio)
-            # Nota: Puedes iniciar sesión automáticamente aquí si lo deseas, pero el mejor
-            # flujo de seguridad es pedir al usuario que inicie sesión.
-            return redirect(url_for('login'))
-        
+        cursor = conn.cursor()
+        try:
+            cursor.execute("INSERT INTO usuarios (username, password) VALUES (%s, %s)", (username, hashed_password))
+            conn.commit()
+            logger.info(f"Nuevo usuario registrado: {username}")
         except mysql.connector.Error as err:
-            # Manejo de errores específicos (ej. usuario o email duplicado)
-            if err.errno == 1062: # Código de error de MySQL para "Duplicate entry" (clave UNIQUE)
-                error = "El nombre de usuario o el correo electrónico ya está registrado."
-            else:
-                logger.error(f"Error al registrar usuario: {err}")
-                error = "Ocurrió un error al intentar registrar el usuario."
-        
+            logger.error(f"Error al registrar usuario: {err}")
+            conn.rollback() # Es buena práctica hacer rollback en caso de error
+            return render_template('register.html', error="El usuario ya existe o hubo un error.")
         finally:
             cursor.close()
             conn.close()
             
-    # Mostrar el formulario de registro (Método GET) o mostrar error
-    return render_template('register.html', error=error)
-
-# ... (Tu ruta /logout y otras rutas)
-
-
-
+        return redirect(url_for('login'))
+        
+    return render_template('register.html')
 
 @app.route('/logout')
 def logout():
-    # Cierre de sesión: elimina el usuario de la sesión
-    session.pop('username', None) 
+    """Cierra la sesión del usuario."""
+    username = session.pop('username', None)
+    session.pop('user_id', None)
+    if username:
+        logger.info(f"Usuario {username} ha cerrado sesión.")
     return redirect(url_for('login'))
 
-
-
-
-@app.route('/')
-def index():
-    # Restringe el acceso: si no hay 'username' en la sesión, redirige a login
+@app.route('/proyecto')
+def proyecto():
+    """Muestra la página del proyecto (existente)."""
     if 'username' not in session:
         return redirect(url_for('login'))
-        
-    # Muestra el template index.html al usuario logueado
-    return render_template('index.html', username=session['username'])
+    return render_template('proyecto.html')
 
-@app.route('/sobre-proyecto')
-def sobre_proyecto():
-    # También puedes restringir esta ruta si es solo para usuarios logueados
+# =================================================================
+#                       RUTAS DEL SIMULADOR TPU (¡NUEVAS!)
+# =================================================================
+
+@app.route('/modelofinal')
+def modelo_final():
+    """
+    Muestra la página del simulador de TPU (nueva).
+    """
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('login')) # Proteger también esta ruta
         
-    return render_template('sobre_proyecto.html')
+    # Esta plantilla debe extender 'base.html'
+    return render_template('modelofinal.html')
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    """
+    API para el simulador. Recibe JSON, ejecuta el modelo
+    y devuelve la predicción (JSON) con la URL del gráfico.
+    """
+    if 'username' not in session:
+        return jsonify({"error": "No autorizado"}), 401 # Proteger la API
+
+    try:
+        data = request.json
+        
+        # 1. Traduce los nombres de JavaScript (healingTime) a Python (healing_time)
+        input_data = {
+            'hsp': data['hsp'],
+            'healing_time': data['healingTime'],         
+            'peak_logm': data['peakLogM'],               
+            'molecular_weight': data['molecularWeight'],   
+            'contact_angle_mean': data['contactAngleMean'], 
+            'contact_angle_std': data['contactAngleStd'],     
+            'ftir_value': data['ftir'],                  
+            'dsc_tg': data['dsc']                        
+        }
+
+        # 2. Llama al método 'predict' (que crea el gráfico y arregla el float32)
+        prediction_results = predictor.predict(**input_data)
+        
+        # 3. Generar la URL para el gráfico con "sello de tiempo" para evitar caché
+        image_url = url_for('static', filename='current_prediction_chart.png') + f"?v={time.time()}"
+        
+        # 4. Añadir la URL al diccionario de resultados
+        prediction_results['chart_image_url'] = image_url
+        
+        # 5. Devolver el diccionario completo
+        return jsonify(prediction_results)
+
+    except Exception as e:
+        logger.error(f"Error en /predict: {e}")
+        return jsonify({"error": str(e)}), 500
 
 # =================================================================
 #                             CONTEXT PROCESSOR
@@ -223,7 +223,6 @@ def inject_globals():
         'app_name': 'FlexLearn',
         'app_version': '1.0',
         'current_year': 2025,
-        # Agregamos esta variable para saber si el usuario está logueado en cualquier template
         'logged_in': 'username' in session,
         'current_user': session.get('username')
     }
@@ -234,7 +233,7 @@ def inject_globals():
 
 if __name__ == '__main__':
     # Verificar que los templates existen
-    required_templates = ['index.html', 'pagina_error.html', 'login.html'] # Agregamos 'login.html'
+    required_templates = ['index.html', 'pagina_error.html', 'login.html', 'register.html', 'proyecto.html', 'modelofinal.html'] # Añadida 'modelofinal.html'
     missing_templates = []
     
     for template in required_templates:
@@ -244,6 +243,8 @@ if __name__ == '__main__':
     
     if missing_templates:
         logger.warning(f"Plantillas faltantes: {', '.join(missing_templates)}")
-        print(f"⚠️  Advertencia: Faltan plantillas: {', '.join(missing_templates)}")
+        print(f"⚠️   Advertencia: Faltan plantillas: {', '.join(missing_templates)}")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True) # Es mejor usar el default 127.0.0.1 para desarrollo local
+

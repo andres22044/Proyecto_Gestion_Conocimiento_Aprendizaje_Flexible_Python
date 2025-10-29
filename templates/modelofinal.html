@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Simulador de Propiedades TPU{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <!-- Encabezado de la página -->
+    <header class="mb-4">
+        <h1 class="display-5 fw-bold text-dark-blue">Simulador de Propiedades TPU</h1>
+        <p class="fs-5 text-muted">Aplicación para Prototipo 'PLIX' (TPU Auto-reparable)</p>
+    </header>
+
+    <div class="row g-4">
+
+        <!-- Columna de Entradas (Formulario) -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h2 class="h4 card-title fw-semibold mb-4 border-bottom pb-3">1. Parámetros de Entrada</h2>
+                    
+                    <form id="prediction-form" class="row g-3">
+                        
+                        <!-- HSP -->
+                        <div class="col-12">
+                            <label for="hsp" class="form-label fw-medium">Parámetro de Solubilidad (HSP)</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="range" id="hsp" class="form-range" min="0.35" max="0.45" step="0.01" value="0.40">
+                                <span id="hsp-value" class="fw-bold text-dark-blue" style="min-width: 40px; text-align: right;">0.40</span>
+                            </div>
+                        </div>
+
+                        <!-- Healing Time -->
+                        <div class="col-12">
+                            <label for="healingTime" class="form-label fw-medium">Tiempo de Curación (Horas)</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="range" id="healingTime" class="form-range" min="0" max="3" step="0.01" value="0.0">
+                                <span id="healingTime-value" class="fw-bold text-dark-blue" style="min-width: 40px; text-align: right;">0.00 h</span>
+                            </div>
+                        </div>
+
+                        <!-- Otros Parámetros -->
+                        <div class="col-12 pt-3">
+                            <p class="fw-medium mb-2">Parámetros Adicionales (Valores por defecto)</p>
+                            <div class="row g-2">
+                                <div class="col-6 col-md-4">
+                                    <input type="number" id="peakLogM" value="4.5" class="form-control form-control-sm" title="Peak logM">
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <input type="number" id="molecularWeight" value="31623" class="form-control form-control-sm" title="Molecular Weight">
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <input type="number" id="contactAngleMean" value="90.0" class="form-control form-control-sm" title="Contact Angle Mean">
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <input type="number" id="contactAngleStd" value="2.5" class="form-control form-control-sm" title="Contact Angle Std">
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <input type="number" id="ftir" value="0.85" class="form-control form-control-sm" title="FTIR H-Bond">
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <input type="number" id="dsc" value="-40.0" class="form-control form-control-sm" title="DSC Tg">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Predecir -->
+                        <div class="col-12 pt-3">
+                            <button type="submit" id="predict-button" class="btn btn-primary btn-lg w-100 fw-semibold">
+                                <span id="button-text">
+                                    <i class="fas fa-cogs me-2"></i>Predecir Propiedades
+                                </span>
+                                <span id="button-loader" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna de Resultados -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h2 class="h4 card-title fw-semibold mb-4 border-bottom pb-3">2. Resultados de la Predicción</h2>
+                    
+                    <!-- Placeholder -->
+                    <div id="results-placeholder" class="text-center py-5">
+                        <i class="fas fa-chart-line fa-3x text-light"></i>
+                        <p class="text-muted mt-3">Los resultados de la simulación aparecerán aquí.</p>
+                    </div>
+
+                    <!-- Contenedor de Resultados (inicialmente oculto) -->
+                    <div id="results-container" class="visually-hidden">
+                        <!-- Medidores -->
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h3 class="fs-6 fw-medium text-muted mb-2">Eficiencia de Estrés (HE_UTS)</h3>
+                                <div class="gauge-container mx-auto">
+                                    <div class="gauge-bg"></div>
+                                    <div id="gauge-uts-fill" class="gauge-fill"></div>
+                                    <div class="gauge-cover"></div>
+                                    <div id="gauge-uts-label" class="gauge-label text-dark-blue">0%</div>
+                                </div>
+                                <p id="result-uts-label" class="fw-bold text-muted small mt-2">BAJO</p>
+                            </div>
+                            <div class="col-6">
+                                <h3 class="fs-6 fw-medium text-muted mb-2">Eficiencia de Elongación (HE_Elong)</h3>
+                                <div class="gauge-container mx-auto">
+                                    <div class="gauge-bg"></div>
+                                    <div id="gauge-elongation-fill" class="gauge-fill"></div>
+                                    <div class="gauge-cover"></div>
+                                    <div id="gauge-elongation-label" class="gauge-label text-dark-blue">0%</div>
+                                </div>
+                                <p id="result-elongation-label" class="fw-bold text-muted small mt-2">BAJO</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Propiedades Absolutas -->
+                        <div class="mt-4">
+                            <h3 class="fs-5 fw-semibold text-muted mb-3">Propiedades Absolutas</h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                                    <span class="fw-medium">Estrés Máximo (Max_Stress):</span>
+                                    <span id="result-max-stress" class="fw-bold text-dark-blue">0 MPa</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                                    <span class="fw-medium">Deformación Máx. (Max_Strain):</span>
+                                    <span id="result-max-strain" class="fw-bold text-dark-blue">0 %</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Gráfico -->
+                        <div class="mt-4">
+                            <h3 class="fs-5 fw-semibold text-muted mb-3">Gráfico de Correlación</h3>
+                            <div class="border rounded p-2 bg-light d-flex justify-content-center align-items-center" style="min-height: 250px;">
+                                <img id="prediction-chart-img" src="" alt="Gráfico de Predicción" class="img-fluid d-none">
+                                <p id="chart-placeholder" class="text-muted small">El gráfico aparecerá aquí.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }} <!-- Importante: Llama a los scripts del 'base.html' si los hay -->
+<!-- Enlazamos nuestro JavaScript específico para esta página -->
+<script src="{{ url_for('static', filename='js/modelofinal.js') }}"></script>
+{% endblock %}
