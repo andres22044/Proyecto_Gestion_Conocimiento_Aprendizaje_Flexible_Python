@@ -8,9 +8,6 @@ from sklearn.preprocessing import StandardScaler
 from scipy.stats import uniform, randint
 import warnings
 import matplotlib.pyplot as plt
-import os
-import matplotlib.pyplot as plt
-from sklearn.metrics import r2_score 
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
@@ -438,26 +435,20 @@ class XGBoostTPUPropertyPredictor:
             print(f"  • {key}: {value:.3f} {unit}")
         print("="*70)
         
-        self.plot_predictions_vs_actual()
         # --- PASO 7: Devolver el DICCIONARIO serializable ---
         return results_serializable # <-- ¡MODIFICADO!
 
 
-    
-    
-    
     def plot_predictions_vs_actual(self):
         """
-        Genera gráficos de valores predichos vs reales (para todo el dataset)
-        y lo guarda en la carpeta 'static'.
+        Genera gráficos de valores predichos vs reales para cada target.
         """
         if not self.is_trained:
-            print("❌ Error: El modelo debe ser entrenado primero para graficar.")
+            print("❌ Error: El modelo debe ser entrenado primero.")
             return
         
         print("\n📊 Generando gráficos de predicciones vs valores reales...")
         
-        # Obtener predicciones para todo el dataset
         y_pred = self.model.predict(self.X_scaled)
         
         fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -484,16 +475,9 @@ class XGBoostTPUPropertyPredictor:
             ax.grid(True, alpha=0.3)
         
         plt.tight_layout()
-        
-        # --- ¡CAMBIO IMPORTANTE! ---
-        # Guardar en la carpeta 'static' para que Flask pueda encontrarla
-        image_path = os.path.join('static', 'current_prediction_chart.png')
-        plt.savefig(image_path, dpi=200, bbox_inches='tight') # dpi 200 para que sea más rápida
-        
-        # Cerrar la figura para liberar memoria (¡MUY IMPORTANTE en un servidor!)
-        plt.close(fig) 
-        print(f"✓ Gráfico guardado en: {image_path}")
-   
+        plt.savefig('xgboost_predictions_vs_actual.png', dpi=300, bbox_inches='tight')
+        print("✓ Gráfico guardado como 'xgboost_predictions_vs_actual.png'")
+        plt.show()
 
 
 # ============================================================================

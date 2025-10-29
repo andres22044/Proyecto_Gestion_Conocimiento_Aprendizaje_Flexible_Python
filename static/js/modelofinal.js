@@ -29,6 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const chartImage = document.getElementById('prediction-chart-img');
     const chartPlaceholder = document.getElementById('chart-placeholder');
 
+    // ... (después de chartPlaceholder)
+    
+    // Elementos de la nueva tabla
+    const tableHeUts = document.getElementById('table-he-uts');
+    const tableHeElong = document.getElementById('table-he-elong');
+    const tableMaxStress = document.getElementById('table-max-stress');
+    const tableMaxStrain = document.getElementById('table-max-strain');
+
     // --- 2. ACTUALIZACIÓN DE VALORES DE SLIDERS ---
     hspSlider.addEventListener('input', (e) => {
         hspValue.textContent = parseFloat(e.target.value).toFixed(2);
@@ -91,20 +99,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 5. FUNCIÓN DE ACTUALIZACIÓN DE UI (RESULTADOS) ---
+    // --- 5. FUNCIÓN DE ACTUALIZACIÓN DE UI (RESULTADOS) ---
     function updateUI(predictions) {
-        resultsContainer.classList.remove('visually-hidden'); // Quita el oculto
-        resultsPlaceholder.classList.add('d-none'); // Oculta el placeholder
+        resultsContainer.classList.remove('visually-hidden'); 
+        resultsPlaceholder.classList.add('d-none'); 
         
+        // 1. Actualizar Medidores
         updateGauge(gaugeUts, gaugeUtsLabel, resultUtsLabel, predictions.HE_UTS_Mean);
         updateGauge(gaugeElongation, gaugeElongationLabel, resultElongationLabel, predictions.HE_Elongation_Mean);
         
+        // 2. Actualizar Propiedades Absolutas (la lista)
         resultMaxStress.textContent = `${predictions.Max_Stress.toFixed(2)} MPa`;
         resultMaxStrain.textContent = `${predictions.Max_Strain.toFixed(1)} %`;
 
+        // 3. ¡NUEVO! Actualizar la tabla
+        // (Si no hiciste el paso A, usa document.getElementById('...') aquí)
+        tableHeUts.textContent = predictions.HE_UTS_Mean.toFixed(1);
+        tableHeElong.textContent = predictions.HE_Elongation_Mean.toFixed(1);
+        tableMaxStress.textContent = predictions.Max_Stress.toFixed(2);
+        tableMaxStrain.textContent = predictions.Max_Strain.toFixed(1);
+
+        // 4. Actualizar Gráfico
         if (predictions.chart_image_url) {
             chartImage.src = predictions.chart_image_url; 
-            chartImage.classList.remove('d-none'); // Mostrar la imagen
-            chartPlaceholder.classList.add('d-none'); // Ocultar el texto
+            chartImage.classList.remove('d-none'); 
+            chartPlaceholder.classList.add('d-none'); 
         } else {
             chartImage.classList.add('d-none');
             chartPlaceholder.classList.remove('d-none');

@@ -22,13 +22,13 @@
             <a class="navbar-brand d-flex align-items-center fw-bolder text-dark fs-3" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='imagenes/PLIX_LOGO.png') }}" alt="Logo PLIX"
                     style="height: 40px; margin-right: 0.5rem; filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.1));">
-                PLIX 
+                PLIX
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center">
 
@@ -43,14 +43,23 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('sobre_proyecto') }}">
+                        <a class="nav-link" href="{{ url_for('proyecto') }}">
                             <i class="fas fa-leaf me-1"></i> Sostenibilidad
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('modelo_final') }}">
+                            <i class="fas fa-cogs me-1"></i> Simulador
+                        </a>
+                    </li>
+
                     <li class="nav-item ms-lg-3">
-                        <a class="nav-link btn btn-warning btn-sm ms-2 px-4 fw-bold text-dark shadow-sm" href="#">
-                            <i class="fas fa-shopping-cart me-1"></i> ¡Comprar Ahora!
+                        <a class_name="nav-link btn btn-warning btn-sm ms-2 px-4 fw-bold text-dark shadow-sm"
+                            href="https://wa.me/573008255182?text=Hola,%20estoy%20interesado%20en%20el%20tomatodo%20PLIX."
+                            target="_blank" rel="noopener noreferrer">
+
+                            <i class="fab fa-whatsapp me-1"></i> ¡Chatea para Comprar!
                         </a>
                     </li>
 

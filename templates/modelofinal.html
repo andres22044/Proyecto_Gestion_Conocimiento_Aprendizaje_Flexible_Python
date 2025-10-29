@@ -130,6 +130,46 @@
                                 </li>
                             </ul>
                         </div>
+
+                        <div class="mt-4">
+                            <h3 class="fs-5 fw-semibold text-muted mb-3">Resumen de Predicción</h3>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead class="table-dark-blue">
+                                        <tr>
+                                            <th>Métrica</th>
+                                            <th>Valor Predicho</th>
+                                            <th>Unidades</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="prediction-table-body">
+                                        <tr>
+                                            <td>Eficiencia de Estrés (HE_UTS)</td>
+                                            <td id="table-he-uts">0.0</td>
+                                            <td>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Eficiencia de Elongación (HE_Elong)</td>
+                                            <td id="table-he-elong">0.0</td>
+                                            <td>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Estrés Máximo (Max_Stress)</td>
+                                            <td id="table-max-stress">0.0</td>
+                                            <td>MPa</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Deformación Máx. (Max_Strain)</td>
+                                            <td id="table-max-strain">0.0</td>
+                                            <td>%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                        
                         
                         <!-- Gráfico -->
                         <div class="mt-4">
@@ -147,8 +187,6 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-{{ super() }} <!-- Importante: Llama a los scripts del 'base.html' si los hay -->
-<!-- Enlazamos nuestro JavaScript específico para esta página -->
+{% block extra_js %}
 <script src="{{ url_for('static', filename='js/modelofinal.js') }}"></script>
 {% endblock %}

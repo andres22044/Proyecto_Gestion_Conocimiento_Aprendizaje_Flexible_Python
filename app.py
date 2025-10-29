@@ -1,25 +1,25 @@
 import mysql.connector
 import os
+import matplotlib
+matplotlib.use('Agg') 
+import matplotlib.pyplot as plt
 import logging
 import pandas as pd
 import numpy as np
 import warnings
 import time 
 
-# Importamos tu clase de modelo
+# Importamos tu clase de modelo DIRECTAMENTE desde tu archivo
 from XGBoostModel import XGBoostTPUPropertyPredictor
 
-# Modificamos la importación de Flask para incluir todo lo necesario
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-# Usamos una variable de entorno para la clave secreta.
 app.secret_key = os.environ.get('SECRET_KEY', 'tu_clave_secreta_aqui_para_el_login') 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -30,34 +30,83 @@ DB_CONFIG = {
     'host': '127.0.0.1',  
     'user': 'root',       
     'password': '', 
-    'database': 'usuarios_aula_espejo'
+    'database': 'usuarios_aula_espejo' # ¡Correcto!
 }
 
 def get_db_connection():
-    """Establece y retorna la conexión a la base de datos."""
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
-        # No es necesario loggear esto en cada conexión, solo si falla
         return conn
     except mysql.connector.Error as err:
         logger.error(f"Error al conectar a la base de datos: {err}")
         return None
+    
+
+
+   
+   
+# =================================================================
+#                         FUNCIÓN PARA GRÁFICOS
+# =================================================================
+def create_prediction_chart(results, save_path):
+    """
+    Crea un gráfico de barras horizontal con los resultados de la predicción
+    y lo guarda en la ruta especificada.
+    """
+    try:
+        # Extraer los 4 valores clave del diccionario de resultados
+        metrics = [
+            'Eficiencia de Estrés (HE_UTS)', 
+            'Eficiencia de Elongación (HE_Elong)', 
+            'Estrés Máximo (Max_Stress)', 
+            'Deformación Máx. (Max_Strain)'
+        ]
+        values = [
+            results.get('HE_UTS_Mean', 0),
+            results.get('HE_Elongation_Mean', 0),
+            results.get('Max_Stress', 0),
+            results.get('Max_Strain', 0)
+        ]
+        
+        # Crear el gráfico
+        fig, ax = plt.subplots(figsize=(7, 4)) # Tamaño ajustado para la tarjeta
+        
+        # Gráfico de barras horizontal
+        colors = ['#0d6efd', '#0d6efd', '#ffc107', '#ffc107']
+        bars = ax.barh(metrics, values, color=colors)
+        
+        # Añadir etiquetas de valor al final de cada barra
+        ax.bar_label(bars, fmt='%.2f', padding=3, fontsize=10)
+        
+        # Estilo
+        ax.set_title('Resultados de la Predicción', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Valor Predicho', fontsize=10)
+        ax.grid(axis='x', linestyle='--', alpha=0.6)
+        
+        # Invertir eje Y para que la primera métrica esté arriba
+        ax.invert_yaxis()
+        
+        # Ajustar layout y guardar
+        plt.tight_layout()
+        plt.savefig(save_path, dpi=90, bbox_inches='tight')
+        plt.close(fig) # Importante: cerrar la figura para liberar memoria
+        
+        logger.info(f"Gráfico de predicción guardado en: {save_path}")
+    
+    except Exception as e:
+        logger.error(f"Error al crear el gráfico: {e}")
 
 # =================================================================
-#                         CARGA GLOBAL DEL MODELO (¡NUEVO!)
+#                         CARGA GLOBAL DEL MODELO
 # =================================================================
-# Esto se ejecuta UNA SOLA VEZ cuando inicias el servidor.
-# Mantenemos el modelo entrenado en memoria.
 print("="*50)
 print("INICIANDO SERVIDOR FLASK...")
 print("Cargando y entrenando el modelo XGBoost...")
 print("Esto puede tardar unos segundos...")
 warnings.filterwarnings('ignore', category=UserWarning)
 
-# Crear una instancia de tu predictor
 predictor = XGBoostTPUPropertyPredictor(random_state=42)
 
-# Cargar los datos (asegúrate que 'dataset_ml_final.csv' esté en la misma carpeta que 'app.py')
 try:
     predictor.load_data(filepath='dataset_ml_final.csv')
 except FileNotFoundError:
@@ -66,7 +115,7 @@ except FileNotFoundError:
     print("Asegúrate de que 'dataset_ml_final.csv' esté en la misma carpeta que 'app.py'.")
     print("El servidor no puede iniciar sin el modelo.")
     print("!"*50 + "\n")
-    exit() # Hacemos que la app falle si no encuentra el dataset
+    exit() 
     
 predictor.train_final_model()
 print("="*50)
@@ -78,7 +127,7 @@ print("="*50)
 # =================================================================
 
 @app.route('/')
-def home():
+def index(): 
     """Ruta de inicio, redirige al login si no hay sesión."""
     if 'username' in session:
         return render_template('index.html')
@@ -96,16 +145,20 @@ def login():
             return render_template('login.html', error="Error de conexión con la base de datos.")
         
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuarios WHERE username = %s", (username,))
+        
+        # --- ¡ESTA LÍNEA ES CORRECTA! ---
+        # Busca en la tabla 'usuarios' (plural)
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        
         user = cursor.fetchone()
         cursor.close()
         conn.close()
         
-        if user and check_password_hash(user['password'], password):
+        if user and check_password_hash(user['password_hash'], password):
             session['username'] = user['username']
             session['user_id'] = user['id']
             logger.info(f"Usuario {username} ha iniciado sesión.")
-            return redirect(url_for('home'))
+            return redirect(url_for('index')) 
         else:
             logger.warning(f"Intento de login fallido para el usuario {username}.")
             return render_template('login.html', error="Usuario o contraseña incorrectos")
@@ -126,12 +179,14 @@ def register():
             
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO usuarios (username, password) VALUES (%s, %s)", (username, hashed_password))
+            # --- ¡ESTA LÍNEA ES CORRECTA! ---
+            # Inserta en la tabla 'usuarios' (plural)
+            cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", (username, hashed_password))
             conn.commit()
             logger.info(f"Nuevo usuario registrado: {username}")
         except mysql.connector.Error as err:
             logger.error(f"Error al registrar usuario: {err}")
-            conn.rollback() # Es buena práctica hacer rollback en caso de error
+            conn.rollback() 
             return render_template('register.html', error="El usuario ya existe o hubo un error.")
         finally:
             cursor.close()
@@ -152,13 +207,16 @@ def logout():
 
 @app.route('/proyecto')
 def proyecto():
-    """Muestra la página del proyecto (existente)."""
+    """Muestra la página de Sostenibilidad."""
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('proyecto.html')
+    
+    # --- ¡ESTE ES EL CAMBIO! ---
+    # Ahora apunta al nuevo archivo que subiste.
+    return render_template('sobre_proyecto.html')
 
 # =================================================================
-#                       RUTAS DEL SIMULADOR TPU (¡NUEVAS!)
+#                       RUTAS DEL SIMULADOR TPU (NUEVAS)
 # =================================================================
 
 @app.route('/modelofinal')
@@ -167,24 +225,23 @@ def modelo_final():
     Muestra la página del simulador de TPU (nueva).
     """
     if 'username' not in session:
-        return redirect(url_for('login')) # Proteger también esta ruta
+        return redirect(url_for('login')) 
         
-    # Esta plantilla debe extender 'base.html'
     return render_template('modelofinal.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
     """
-    API para el simulador. Recibe JSON, ejecuta el modelo
-    y devuelve la predicción (JSON) con la URL del gráfico.
+    API para el simulador. Recibe JSON, ejecuta el modelo,
+    CREA UN GRÁFICO y devuelve la predicción (JSON) con la URL del gráfico.
     """
     if 'username' not in session:
-        return jsonify({"error": "No autorizado"}), 401 # Proteger la API
+        return jsonify({"error": "No autorizado"}), 401
 
     try:
+        # 1. Obtener los datos de entrada del JavaScript
         data = request.json
         
-        # 1. Traduce los nombres de JavaScript (healingTime) a Python (healing_time)
         input_data = {
             'hsp': data['hsp'],
             'healing_time': data['healingTime'],         
@@ -196,20 +253,36 @@ def predict():
             'dsc_tg': data['dsc']                        
         }
 
-        # 2. Llama al método 'predict' (que crea el gráfico y arregla el float32)
+        # 2. Obtener los NÚMEROS de la predicción
         prediction_results = predictor.predict(**input_data)
         
-        # 3. Generar la URL para el gráfico con "sello de tiempo" para evitar caché
+        # --- ¡CÓDIGO NUEVO PARA EL GRÁFICO! ---
+        
+        # 3. Definir la ruta completa donde se guardará el gráfico
+        #    (Esto busca la carpeta 'static' automáticamente)
+        save_path = os.path.join(app.static_folder, 'current_prediction_chart.png')
+        
+        # 4. Llamar a la función que crea y guarda el gráfico
+        #    (Le pasamos los números de la predicción y la ruta)
+        create_prediction_chart(prediction_results, save_path)
+        
+        # --- FIN DEL CÓDIGO NUEVO ---
+
+        # 5. Crear la URL para el gráfico
+        #    El "?v={time.time()}" es un truco para evitar que el navegador
+        #    use una imagen antigua que tenga guardada en caché.
         image_url = url_for('static', filename='current_prediction_chart.png') + f"?v={time.time()}"
         
-        # 4. Añadir la URL al diccionario de resultados
+        # 6. Añadir la URL de la imagen al diccionario de resultados
         prediction_results['chart_image_url'] = image_url
         
-        # 5. Devolver el diccionario completo
+        # 7. Devolver todo como un JSON
         return jsonify(prediction_results)
 
     except Exception as e:
         logger.error(f"Error en /predict: {e}")
+        # Imprimir el error en la consola de Flask ayuda a depurar
+        print(f"Error detallado en /predict: {e}") 
         return jsonify({"error": str(e)}), 500
 
 # =================================================================
@@ -232,8 +305,7 @@ def inject_globals():
 # =================================================================
 
 if __name__ == '__main__':
-    # Verificar que los templates existen
-    required_templates = ['index.html', 'pagina_error.html', 'login.html', 'register.html', 'proyecto.html', 'modelofinal.html'] # Añadida 'modelofinal.html'
+    required_templates = ['index.html', 'pagina_error.html', 'login.html', 'register.html', 'proyecto.html', 'modelofinal.html']
     missing_templates = []
     
     for template in required_templates:
@@ -245,6 +317,5 @@ if __name__ == '__main__':
         logger.warning(f"Plantillas faltantes: {', '.join(missing_templates)}")
         print(f"⚠️   Advertencia: Faltan plantillas: {', '.join(missing_templates)}")
     
-    # app.run(debug=True, host='0.0.0.0', port=5000)
-    app.run(debug=True) # Es mejor usar el default 127.0.0.1 para desarrollo local
+    app.run(debug=True)
 
