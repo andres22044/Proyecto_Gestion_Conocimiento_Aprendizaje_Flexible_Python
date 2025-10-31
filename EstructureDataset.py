@@ -43,28 +43,6 @@ N_MAX_VALUES = 5
 # FUNCIÓN PRINCIPAL DE PROCESAMIENTO - STRESS/STRAIN (MAX ORIGINAL)
 # ============================================================================
 def process_stress_strain_file(filepath, hsp_value):
-    """
-    Procesa un archivo CSV con encabezado doble de stress-strain.
-    Extrae EL MÁXIMO ORIGINAL de Strain y Stress para cada réplica.
-    
-    Parameters:
-    -----------
-    filepath : str
-        Ruta completa al archivo CSV
-    hsp_value : float
-        Valor HSP correspondiente al polímero (0.35, 0.40, 0.45)
-    
-    Returns:
-    --------
-    pd.DataFrame
-        DataFrame procesado con una fila por réplica original.
-    """
-    print(f"\n{'='*70}")
-    print(f"Procesando: {os.path.basename(filepath)}")
-    print(f"HSP: {hsp_value}")
-    print(f"{'='*70}")
-    
-    # Lectura manual de encabezados
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             header_row1 = f.readline().strip().split(',')
@@ -73,20 +51,17 @@ def process_stress_strain_file(filepath, hsp_value):
         print(f"❌ Error: Archivo no encontrado en {filepath}")
         return pd.DataFrame()
 
-    # Leer el CSV completo saltando las dos primeras filas
     df = pd.read_csv(filepath, skiprows=2, header=None, encoding='utf-8')
     
     results = []
     current_condition = None
     current_replica_int = None
     
-    # Procesar columnas
     i = 2
     while i < len(header_row1):
         cell_row1 = header_row1[i].strip() if i < len(header_row1) else ''
         cell_row2 = header_row2[i].strip() if i < len(header_row2) else ''
         
-        # Identificación de la condición
         if cell_row1 and not cell_row1.startswith('Unnamed'):
             if cell_row1 in HEALING_TIME_MAP:
                 current_condition = cell_row1
@@ -94,58 +69,67 @@ def process_stress_strain_file(filepath, hsp_value):
             elif cell_row1.isdigit():
                 current_replica_int = int(cell_row1)
         
-        # Identificación de la réplica
         if current_condition and cell_row2.isdigit() and 1 <= int(cell_row2) <= 4:
             current_replica_int = int(cell_row2)
         
-        # Extracción de datos si encontramos "Strain / %"
         if 'Strain' in cell_row2 and current_condition and current_replica_int is not None:
             healing_time = HEALING_TIME_MAP.get(current_condition)
             
             if healing_time is not None:
-                # La siguiente columna debería ser "Stress / MPa"
                 if i + 1 < len(header_row2) and 'Stress' in header_row2[i + 1].strip():
                     
-                    # Extraer datos y filtrar valores negativos (ruido)
-                    strain_data = pd.to_numeric(df.iloc[:, i], errors='coerce').dropna()
-                    stress_data = pd.to_numeric(df.iloc[:, i + 1], errors='coerce').dropna()
+                    # 1. Extraer datos y limpiar NaNs (manteniendo los índices originales)
+                    strain_data_raw = pd.to_numeric(df.iloc[:, i], errors='coerce')
+                    stress_data_raw = pd.to_numeric(df.iloc[:, i + 1], errors='coerce')
                     
-                    # FILTRAR VALORES NEGATIVOS
-                    strain_data = strain_data[strain_data >= 0]
-                    stress_data = stress_data[stress_data >= 0]
+                    # 2. CREAR Y ALINEAR: Combinar en un DataFrame temporal
+                    aligned_data = pd.DataFrame({
+                        'strain': strain_data_raw,
+                        'stress': stress_data_raw
+                    }).dropna() # Eliminar filas donde falta algún valor
+                    
+                    if aligned_data.empty:
+                        i += 2
+                        continue
+
+                    # 3. Aplicar filtro de valores positivos a AMBAS columnas
+                    mask_positive = (aligned_data['strain'] >= 0) & (aligned_data['stress'] >= 0)
+                    aligned_data = aligned_data[mask_positive]
+
+                    if aligned_data.empty:
+                        i += 2
+                        continue
+
+                    # 4. Reasignar las variables ya ALINEADAS y LIMPIAS
+                    strain_data = aligned_data['strain']
+                    stress_data = aligned_data['stress']
                     
                     if len(strain_data) > 0 and len(stress_data) > 0:
-                       # Asegurar float y quitar NaN
-                        strain_data = df.iloc[:, i].dropna().astype(float)
-                        stress_data = df.iloc[:, i + 1].dropna().astype(float)
                         
-                        # Filtra y ordena los valores POSITIVOS para encontrar los máximos reales
-                        # Esto evita el ruido de la máquina cerca del 0 o valores negativos iniciales.
-                        strain_positive = strain_data[strain_data > 0].sort_values(ascending=False)
-                        stress_positive = stress_data[stress_data > 0].sort_values(ascending=False)
-
-                        # Determinar cuántas filas podemos generar (el mínimo de N y los datos disponibles)
-                        num_to_extract = min(N_MAX_VALUES, len(strain_positive), len(stress_positive))
-
-                        # Tomar los N valores superiores
-                        top_strains = strain_positive.head(num_to_extract).reset_index(drop=True)
-                        top_stresses = stress_positive.head(num_to_extract).reset_index(drop=True)
+                        # --- LÓGICA REFINADA (YA NO DA ERROR) ---
                         
-                        # 5. Generar las N_MAX_VALUES nuevas réplicas (filas)
-                        for k in range(num_to_extract):
+                        # 2. Evento 1: Punto de Resistencia Máxima (UTS)
+                        
+                        uts_max_stress_value = stress_data.max()
+                        
+                        # El índice booleano (stress_data == uts_max_stress_value)
+                        # ahora está alineado con strain_data
+                        all_strains_at_max_stress = strain_data[stress_data == uts_max_stress_value]
+                        
+                        # Escoger el Strain MÁS ALTO de ese grupo
+                        strain_at_uts = all_strains_at_max_stress.max()
+                        
+                        # 4. Guardar la fila ÚNICA de resultados
+                        results.append({
+                            'HSP': hsp_value,
+                            'Healing_Time': healing_time,
+                            'Replica_Set': int(current_replica_int),
                             
-                            # Usar un ID de réplica compuesto (ej., '1-1', '1-2')
-                            replica_id = f"{current_replica_int}-{k+1}" 
-                            
-                            results.append({
-                                'HSP': hsp_value,
-                                'Healing_Time': healing_time,
-                                'Replica_Set': replica_id,
-                                'Max_Strain': top_strains.iloc[k],
-                                'Max_Stress': top_stresses.iloc[k]
-                            })
-                            
-                        print(f"✓ Procesado: {current_condition} - Set {current_replica_int} | Generadas {num_to_extract} réplicas sintéticas.")
+                            'Max_Stress_UTS': uts_max_stress_value,
+                            'Strain_at_UTS': strain_at_uts,
+                        })
+                        
+                        print(f"✓ Procesado (Refinado): {current_condition} - Set {current_replica_int}")
                         
                         i += 2  # Saltar Strain y Stress
                         continue
@@ -153,10 +137,28 @@ def process_stress_strain_file(filepath, hsp_value):
         i += 1
     
     df_result = pd.DataFrame(results)
-    print(f"\n📊 Total de réplicas procesadas: {len(df_result)}")
     
-    return df_result
+    # ... (El resto del código para post-procesar y añadir UTS_Original_Mean) ...
+    if df_result.empty:
+        print("⚠️ No se procesaron resultados.")
+        return df_result
+        
+    print(f"\n📊 Total de réplicas procesadas (N=1): {len(df_result)}")
+    
+    # --- Post-procesamiento (Añadir UTS_Original_Mean) ---
+    print("\nCalculando y fusionando features de 'UTS_Original'...")
+    df_undamaged = df_result[df_result['Healing_Time'] == 0.0].copy()
+    if df_undamaged.empty:
+        print("❌ Error: No se encontraron filas 'Undamaged' (Healing_Time == 0.0).")
+        return df_result
+    df_originals_mean = df_undamaged.groupby('HSP').agg(
+        UTS_Original_Mean=('Max_Stress_UTS', 'mean'),
+        Strain_Original_Mean=('Strain_at_UTS', 'mean')
+    ).reset_index()
+    df_result_final = pd.merge(df_result, df_originals_mean, on='HSP', how='left')
+    print("✓ Feature 'UTS_Original_Mean' y 'Strain_Original_Mean' añadidas.")
 
+    return df_result_final
 
 # ============================================================================
 # PROCESAMIENTO DE HEALING EFFICIENCY
@@ -524,6 +526,7 @@ def create_final_dataset():
     
     # 5. Ordenar y limpiar
     df_final = df_final.sort_values(['HSP', 'Healing_Time', 'Replica_Set']).reset_index(drop=True)
+    
     
     print(f"\n{'='*70}")
     print(f"DATASET FINAL GENERADO")

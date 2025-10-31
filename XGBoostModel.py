@@ -46,6 +46,8 @@ class XGBoostTPUPropertyPredictor:
         self.feature_names = [
             'HSP',
             'Healing_Time',
+            'UTS_Original_Mean',
+            'Strain_Original_Mean',
             'Peak_logM',
             'Molecular_Weight',
             'Contact_Angle_Mean',
@@ -55,8 +57,6 @@ class XGBoostTPUPropertyPredictor:
         ]
         
         self.target_names = [
-            'Max_Stress',
-            'Max_Strain',
             'HE_Elongation_Mean',
             'HE_UTS_Mean'
         ]
@@ -341,13 +341,6 @@ class XGBoostTPUPropertyPredictor:
         
         print("="*70)
         
-        # Resaltar Max_Stress
-        max_stress_idx = self.target_names.index('Max_Stress')
-        print(f"\n🎯 OBJETIVO PRINCIPAL - Max_Stress:")
-        print(f"   R² Score: {r2_scores[max_stress_idx]:.4f}")
-        print(f"   MAE: {mae_scores[max_stress_idx]:.3f} MPa")
-        print(f"   RMSE: {rmse_scores[max_stress_idx]:.3f} MPa")
-        
         return {
             'MAE': mae_scores,
             'RMSE': rmse_scores,
@@ -389,7 +382,7 @@ class XGBoostTPUPropertyPredictor:
         
         return feature_importance_df
 
-    def predict(self, hsp, healing_time, peak_logm, molecular_weight, 
+    def predict(self, hsp, healing_time, peak_logm, molecular_weight, UTS_Original_Mean, Strain_Original_Mean, 
                 contact_angle_mean, contact_angle_std, ftir_value, dsc_tg):
         """
         Predice las propiedades mecánicas dados los parámetros de entrada.
@@ -404,6 +397,8 @@ class XGBoostTPUPropertyPredictor:
         print("Parámetros de entrada:")
         print(f"  • HSP: {hsp}")
         print(f"  • Healing Time: {healing_time} hrs")
+        print(f"  • UTS Original Mean: {UTS_Original_Mean} MPa")
+        print(f"  • Strain Original Mean: {Strain_Original_Mean} %")
         print(f"  • Peak logM: {peak_logm}")
         print(f"  • Molecular Weight: {molecular_weight} g/mol")
         print(f"  • Contact Angle: {contact_angle_mean}° ± {contact_angle_std}°")
@@ -412,7 +407,7 @@ class XGBoostTPUPropertyPredictor:
         
         # Crear DataFrame de entrada
         input_data = pd.DataFrame([[
-            hsp, healing_time, peak_logm, molecular_weight,
+            hsp, healing_time, UTS_Original_Mean, Strain_Original_Mean, peak_logm, molecular_weight,
             contact_angle_mean, contact_angle_std, ftir_value, dsc_tg
         ]], columns=self.feature_names)
         
@@ -429,7 +424,7 @@ class XGBoostTPUPropertyPredictor:
         print("PROPIEDADES PREDICHAS:")
         print("="*70)
         for key, value in results.items():
-            unit = "MPa" if "Stress" in key else "%" if "Strain" in key or "HE" in key else ""
+            unit = "%" if "HE_UTS_eficiency" in key else "%" if "HE_strain_eficiency" in key or "HE" in key else ""
             print(f"  • {key}: {value:.3f} {unit}")
         print("="*70)
         
@@ -521,6 +516,8 @@ if __name__ == "__main__":
     predictor.predict(
         hsp=0.38,
         healing_time=1.0,
+        UTS_Original_Mean=0.31,
+        Strain_Original_Mean=1255.0,
         peak_logm=4.5,
         molecular_weight=31623,
         contact_angle_mean=90.0,
@@ -534,6 +531,8 @@ if __name__ == "__main__":
     predictor.predict(
         hsp=0.40,
         healing_time=0.0,
+        UTS_Original_Mean=0.268,
+        Strain_Original_Mean=969.0,
         peak_logm=4.6,
         molecular_weight=39811,
         contact_angle_mean=92.0,
