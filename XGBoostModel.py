@@ -46,6 +46,8 @@ class XGBoostTPUPropertyPredictor:
         self.feature_names = [
             'HSP',
             'Healing_Time',
+            'UTS_Original_Mean',
+            'Strain_Original_Mean',
             'Peak_logM',
             'Molecular_Weight',
             'Contact_Angle_Mean',
@@ -55,8 +57,8 @@ class XGBoostTPUPropertyPredictor:
         ]
         
         self.target_names = [
-            'Max_Stress',
-            'Max_Strain',
+            'Max_Stress_UTS',
+            'Strain_at_UTS',
             'HE_Elongation_Mean',
             'HE_UTS_Mean'
         ]
@@ -342,7 +344,7 @@ class XGBoostTPUPropertyPredictor:
         print("="*70)
         
         # Resaltar Max_Stress
-        max_stress_idx = self.target_names.index('Max_Stress')
+        max_stress_idx = self.target_names.index('Max_Stress_UTS')
         print(f"\n🎯 OBJETIVO PRINCIPAL - Max_Stress:")
         print(f"   R² Score: {r2_scores[max_stress_idx]:.4f}")
         print(f"   MAE: {mae_scores[max_stress_idx]:.3f} MPa")
@@ -389,7 +391,7 @@ class XGBoostTPUPropertyPredictor:
         
         return feature_importance_df
 
-    def predict(self, hsp, healing_time, peak_logm, molecular_weight, 
+    def predict(self, hsp, healing_time, UTS_original, strain_original, peak_logm, molecular_weight, 
                 contact_angle_mean, contact_angle_std, ftir_value, dsc_tg):
         """
         Predice las propiedades mecánicas dados los parámetros de entrada.
@@ -404,6 +406,8 @@ class XGBoostTPUPropertyPredictor:
         print("Parámetros de entrada:")
         print(f"  • HSP: {hsp}")
         print(f"  • Healing Time: {healing_time} hrs")
+        print(f"  • UTS Original Mean: {UTS_original} MPa")
+        print(f"  • Strain Original Mean: {strain_original} %")
         print(f"  • Peak logM: {peak_logm}")
         print(f"  • Molecular Weight: {molecular_weight} g/mol")
         print(f"  • Contact Angle: {contact_angle_mean}° ± {contact_angle_std}°")
@@ -412,7 +416,7 @@ class XGBoostTPUPropertyPredictor:
         
         # Crear DataFrame de entrada
         input_data = pd.DataFrame([[
-            hsp, healing_time, peak_logm, molecular_weight,
+            hsp, healing_time, UTS_original, strain_original, peak_logm, molecular_weight,
             contact_angle_mean, contact_angle_std, ftir_value, dsc_tg
         ]], columns=self.feature_names)
         
@@ -521,6 +525,8 @@ if __name__ == "__main__":
     predictor.predict(
         hsp=0.38,
         healing_time=1.0,
+        UTS_original=31.6,
+        strain_original=1250.0,
         peak_logm=4.5,
         molecular_weight=31623,
         contact_angle_mean=90.0,
@@ -534,6 +540,8 @@ if __name__ == "__main__":
     predictor.predict(
         hsp=0.40,
         healing_time=0.0,
+        UTS_original=35.8,
+        strain_original=969.0,
         peak_logm=4.6,
         molecular_weight=39811,
         contact_angle_mean=92.0,
@@ -551,3 +559,12 @@ if __name__ == "__main__":
     print("\n" + "✅"*35)
     print("PIPELINE COMPLETADO EXITOSAMENTE")
     print("✅"*35 + "\n")
+
+#======================================================================
+#Propiedad              | MAE        | RMSE       | R² Score
+#----------------------------------------------------------------------
+#Max_Stress_UTS         | 0.066      | 0.087      | 0.344
+#Strain_at_UTS          | 243.851    | 324.090    | 0.104
+#HE_Elongation_Mean     | 2.361      | 3.343      | 0.976
+#HE_UTS_Mean            | 2.718      | 3.998      | 0.922
+#======================================================================
