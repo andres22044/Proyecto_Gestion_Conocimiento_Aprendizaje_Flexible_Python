@@ -1,0 +1,66 @@
+{
+  "input_ranges": {
+    "HSP": {
+      "min": 0.35,
+      "max": 0.45,
+      "description": "Porcentaje de segmento duro del TPU"
+    },
+    "Healing_Time": {
+      "min": 0.0,
+      "max": 3.0,
+      "description": "Tiempo de curación en horas"
+    },
+    "UTS_Original_Mean": {
+      "min": 0.14,
+      "max": 0.63,
+      "description": "Estrés máximo original en MPa"
+    },
+    "Strain_Original_Mean": {
+      "min": 116.37,
+      "max": 1799.37,
+      "description": "Deformación original en %"
+    },
+    "Peak_logM": {
+      "min": 4.43,
+      "max": 4.53,
+      "description": "Logaritmo del peso molecular pico"
+    },
+    "Molecular_Weight": {
+      "min": 26915.35,
+      "max": 33884.42,
+      "description": "Peso molecular en g/mol"
+    },
+    "Contact_Angle_Mean": {
+      "min": 70.624,
+      "max": 76.002,
+      "description": "Ángulo de contacto medio en grados"
+    },
+    "Contact_Angle_Std": {
+      "min": 39.143,
+      "max": 42.121,
+      "description": "Desviación estándar del ángulo de contacto"
+    },
+    "FTIR_H-Bond_Value": {
+      "min": 93.57,
+      "max": 197.06,
+      "description": "Valor FTIR de enlace de hidrógeno"
+    },
+    "DSC_Tg_Value": {
+      "min": -89.96,
+      "max": -89.82,
+      "description": "Temperatura de transición vítrea en °C"
+    }
+  },
+  "output_ranges": {
+    "HE_Elongation_Mean": {
+      "min": 34.2,
+      "max": 100.0,
+      "description": "Eficiencia de elongación en %"
+    },
+    "HE_UTS_Mean": {
+      "min": 68.5,
+      "max": 107.9,
+      "description": "Eficiencia de estrés en %"
+    }
+  }
+}

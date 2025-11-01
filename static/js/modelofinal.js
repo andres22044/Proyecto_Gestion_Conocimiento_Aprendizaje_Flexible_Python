@@ -18,42 +18,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('results-container');
     
     // Elementos de resultados
-    const gaugeUts = document.getElementById('gauge-uts-fill');
-    const gaugeUtsLabel = document.getElementById('gauge-uts-label');
-    const resultUtsLabel = document.getElementById('result-uts-label');
-    const gaugeElongation = document.getElementById('gauge-elongation-fill');
-    const gaugeElongationLabel = document.getElementById('gauge-elongation-label');
-    const resultElongationLabel = document.getElementById('result-elongation-label');
-    const resultMaxStress = document.getElementById('result-max-stress');
-    const resultMaxStrain = document.getElementById('result-max-strain');
-    const chartImage = document.getElementById('prediction-chart-img');
-    const chartPlaceholder = document.getElementById('chart-placeholder');
-
-    // ... (después de chartPlaceholder)
+    const resultUtsEfficiency = document.getElementById('result-uts-efficiency');
+    const resultElongationEfficiency = document.getElementById('result-elongation-efficiency');
     
-    // Elementos de la nueva tabla
-    const tableHeUts = document.getElementById('table-he-uts');
-    const tableHeElong = document.getElementById('table-he-elong');
-    const tableMaxStress = document.getElementById('table-max-stress');
-    const tableMaxStrain = document.getElementById('table-max-strain');
+    // Elementos del QR
+    const qrCodeImg = document.getElementById('qr-code-img');
+    const qrPlaceholder = document.getElementById('qr-placeholder');
+    const downloadQrBtn = document.getElementById('download-qr-btn');
 
     // --- 2. ACTUALIZACIÓN DE VALORES DE SLIDERS ---
     hspSlider.addEventListener('input', (e) => {
         hspValue.textContent = parseFloat(e.target.value).toFixed(2);
     });
+    
     healingTimeSlider.addEventListener('input', (e) => {
-        healingTimeValue.textContent = `${parseFloat(e.target.value).toFixed(2)} h`;
+        healingTimeValue.textContent = `${parseFloat(e.target.value).toFixed(1)} h`;
     });
 
     // --- 3. MANEJO DEL ENVÍO DEL FORMULARIO ---
     form.addEventListener('submit', async (e) => {
         e.preventDefault(); // Evitar que la página se recargue
         
+        // Validación de rangos
+        const utsOriginal = parseFloat(document.getElementById('utsOriginal').value);
+        const strainOriginal = parseFloat(document.getElementById('strainOriginal').value);
+        
+        if (utsOriginal < 0.14 || utsOriginal > 0.63) {
+            alert('UTS Original debe estar entre 0.14 y 0.63 MPa');
+            return;
+        }
+        
+        if (strainOriginal < 116.37 || strainOriginal > 1799.37) {
+            alert('Strain Original debe estar entre 116.37 y 1799.37 %');
+            return;
+        }
+        
         setLoading(true);
 
         const inputData = {
+            sampleId: document.getElementById('sampleId').value,
             hsp: parseFloat(hspSlider.value),
             healingTime: parseFloat(healingTimeSlider.value),
+            utsOriginal: utsOriginal,
+            strainOriginal: strainOriginal,
             peakLogM: parseFloat(document.getElementById('peakLogM').value),
             molecularWeight: parseFloat(document.getElementById('molecularWeight').value),
             contactAngleMean: parseFloat(document.getElementById('contactAngleMean').value),
@@ -88,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 4. FUNCIÓN DE ESTADO DE CARGA ---
     function setLoading(isLoading) {
         if (isLoading) {
-            buttonText.classList.add('d-none'); // d-none es display:none en Bootstrap
+            buttonText.classList.add('d-none');
             buttonLoader.style.display = 'inline-block';
             predictButton.disabled = true;
         } else {
@@ -99,70 +106,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 5. FUNCIÓN DE ACTUALIZACIÓN DE UI (RESULTADOS) ---
-    // --- 5. FUNCIÓN DE ACTUALIZACIÓN DE UI (RESULTADOS) ---
     function updateUI(predictions) {
+        // Mostrar contenedor de resultados
         resultsContainer.classList.remove('visually-hidden'); 
-        resultsPlaceholder.classList.add('d-none'); 
+        resultsPlaceholder.classList.add('d-none');
         
-        // 1. Actualizar Medidores
-        updateGauge(gaugeUts, gaugeUtsLabel, resultUtsLabel, predictions.HE_UTS_Mean);
-        updateGauge(gaugeElongation, gaugeElongationLabel, resultElongationLabel, predictions.HE_Elongation_Mean);
+        // 1. Actualizar eficiencias predichas
+        const utsEfficiency = predictions.HE_UTS_Mean;
+        const elongationEfficiency = predictions.HE_Elongation_Mean;
         
-        // 2. Actualizar Propiedades Absolutas (la lista)
-        resultMaxStress.textContent = `${predictions.Max_Stress.toFixed(2)} MPa`;
-        resultMaxStrain.textContent = `${predictions.Max_Strain.toFixed(1)} %`;
-
-        // 3. ¡NUEVO! Actualizar la tabla
-        // (Si no hiciste el paso A, usa document.getElementById('...') aquí)
-        tableHeUts.textContent = predictions.HE_UTS_Mean.toFixed(1);
-        tableHeElong.textContent = predictions.HE_Elongation_Mean.toFixed(1);
-        tableMaxStress.textContent = predictions.Max_Stress.toFixed(2);
-        tableMaxStrain.textContent = predictions.Max_Strain.toFixed(1);
-
-        // 4. Actualizar Gráfico
-        if (predictions.chart_image_url) {
-            chartImage.src = predictions.chart_image_url; 
-            chartImage.classList.remove('d-none'); 
-            chartPlaceholder.classList.add('d-none'); 
+        resultUtsEfficiency.textContent = `${utsEfficiency.toFixed(1)}%`;
+        resultElongationEfficiency.textContent = `${elongationEfficiency.toFixed(1)}%`;
+        
+        // Añadir clases de color según el valor
+        updateEfficiencyColor(resultUtsEfficiency, utsEfficiency);
+        updateEfficiencyColor(resultElongationEfficiency, elongationEfficiency);
+        
+        // 2. Actualizar código QR
+        if (predictions.qr_code) {
+            qrCodeImg.src = `data:image/png;base64,${predictions.qr_code}`;
+            qrCodeImg.classList.remove('d-none');
+            qrPlaceholder.classList.add('d-none');
+            downloadQrBtn.classList.remove('d-none');
+            
+            // Guardar el QR globalmente para descarga
+            window.currentQRCode = predictions.qr_code;
         } else {
-            chartImage.classList.add('d-none');
-            chartPlaceholder.classList.remove('d-none');
+            qrCodeImg.classList.add('d-none');
+            qrPlaceholder.classList.remove('d-none');
+            downloadQrBtn.classList.add('d-none');
         }
+        
+        // 3. Scroll suave a resultados
+        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
-    // --- 6. FUNCIÓN AUXILIAR PARA MEDIDORES ---
-    function updateGauge(gaugeElement, textElement, labelElement, percentage) {
-        if (percentage < 0) percentage = 0;
-        if (percentage > 100) percentage = 100;
+    // --- 6. FUNCIÓN AUXILIAR PARA COLORES DE EFICIENCIA ---
+    function updateEfficiencyColor(element, value) {
+        // Remover clases existentes
+        element.classList.remove('text-success', 'text-warning', 'text-danger', 'text-primary');
         
-        const angle = (percentage / 100) * 180;
-        gaugeElement.style.transform = `rotate(${angle}deg)`;
-        textElement.textContent = `${percentage.toFixed(1)}%`;
-        
-        // Colores de Bootstrap
-        const textSuccess = 'text-success';
-        const textWarning = 'text-warning';
-        const textDanger = 'text-danger';
-        const bgSuccess = 'bg-success';
-        const bgWarning = 'bg-warning';
-        const bgDanger = 'bg-danger';
-
-        // Quitar clases antiguas
-        gaugeElement.classList.remove(bgSuccess, bgWarning, bgDanger);
-        labelElement.classList.remove(textSuccess, textWarning, textDanger);
-
-        if (percentage >= 90) {
-            gaugeElement.classList.add(bgSuccess);
-            labelElement.textContent = 'ÓPTIMO';
-            labelElement.classList.add(textSuccess);
-        } else if (percentage >= 70) {
-            gaugeElement.classList.add(bgWarning);
-            labelElement.textContent = 'BUENO';
-            labelElement.classList.add(textWarning);
+        // Añadir clase según el valor
+        if (value >= 90) {
+            element.classList.add('text-success');
+        } else if (value >= 70) {
+            element.classList.add('text-warning');
+        } else if (value >= 50) {
+            element.classList.add('text-primary');
         } else {
-            gaugeElement.classList.add(bgDanger);
-            labelElement.textContent = 'BAJO';
-            labelElement.classList.add(textDanger);
+            element.classList.add('text-danger');
         }
     }
 });
+
+// --- 7. FUNCIÓN GLOBAL PARA DESCARGAR QR ---
+function downloadQR() {
+    if (!window.currentQRCode) {
+        alert('No hay código QR para descargar');
+        return;
+    }
+    
+    // Crear un enlace temporal para la descarga
+    const link = document.createElement('a');
+    link.href = `data:image/png;base64,${window.currentQRCode}`;
+    link.download = `PLIX_Etiqueta_${new Date().getTime()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
