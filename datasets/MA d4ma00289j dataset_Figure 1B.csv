@@ -1,5 +1,5 @@
 Machine Name,Agilent 1260 Infinity II GPC,P35,,,P40,,,P45,
-,"2 x PLgel 5 ?m MIXED-C columns (polystyrene-divinylbenzene (PS/DVB), as well as a PLgel 5 ?m guard column at 35 °C and a flow rate of 1.0 mL.min-1 with THF containing 2.0% v/v triethylamine and 0.05% w/v BHT inhibitor as solvent.",logM,dwdlogM,,logM,dwdlogM,,logM,dwdlogM
+,"2 x PLgel 5 ?m MIXED-C columns polystyrene-divinylbenzene (PS/DVB) as well as a PLgel 5 ?m guard column at 35 ï¿½C and a flow rate of 1.0 mL.min-1 with THF containing 2.0% v/v triethylamine and 0.05% w/v BHT inhibitor as solvent.",logM,dwdlogM,,logM,dwdlogM,,logM,dwdlogM
 ,,6.33,0,,5.86,0,,6.55,0
 ,,6.32,0,,5.85,0,,6.55,0
 ,,6.32,0,,5.85,0,,6.55,0
