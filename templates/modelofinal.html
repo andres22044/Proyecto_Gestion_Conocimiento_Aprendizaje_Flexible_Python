@@ -13,9 +13,10 @@
         <p class="fs-5 text-muted">Predicción de eficiencia para materiales auto-reparables PLIX</p>
     </header>
 
+    <!-- Fila Principal: Formulario y Resultados -->
     <div class="row g-4">
 
-        <!-- COLUMNA IZQUIERDA: ENTRADA DE DATOS -->
+        <!-- COLUMNA IZQUIERDA: ENTRADA DE DATOS (col-lg-6) -->
         <div class="col-lg-6">
             <!-- Sección 1: Variables de Entrada -->
             <div class="card shadow-sm mb-4" style="border-left: 4px solid #0d6efd;">
@@ -70,7 +71,7 @@
                             <label for="utsOriginal" class="form-label fw-medium">
                                 Estrés Máximo Original (UTS Original) [MPa]
                             </label>
-                            <input type="number" id="utsOriginal" class="form-control" step="0.01" value="0.3675" min="0.14" max="0.63" required>
+                            <input type="number" id="utsOriginal" class="form-control" step="any" value="0.3675" min="0.14" max="0.63" required>
                             <small class="text-muted">Rango válido: 0.14 - 0.63 MPa (del dataset de entrenamiento)</small>
                         </div>
 
@@ -79,7 +80,7 @@
                             <label for="strainOriginal" class="form-label fw-medium">
                                 Deformación Original (Strain Original) [%]
                             </label>
-                            <input type="number" id="strainOriginal" class="form-control" step="0.1" value="973.92" min="116.37" max="1799.37" required>
+                            <input type="number" id="strainOriginal" class="form-control" step="any" value="973.92" min="116.37" max="1799.37" required>
                             <small class="text-muted">Rango válido: 116.37 - 1799.37 % (del dataset de entrenamiento)</small>
                         </div>
 
@@ -89,22 +90,75 @@
 
                         <div class="row g-2">
                             <div class="col-6">
-                                <input type="number" id="peakLogM" value="4.53" class="form-control form-control-sm" title="Peak logM" placeholder="Peak logM">
+                                <input type="number" 
+                                    id="peakLogM" 
+                                    value="4.53" 
+                                    class="form-control form-control-sm" 
+                                    title="Logaritmo del peso molecular pico. Rango: 4.43 - 4.53" 
+                                    placeholder="Peak logM"
+                                    min="4.43" 
+                                    max="4.53"
+                                    step="any">
                             </div>
+                            
                             <div class="col-6">
-                                <input type="number" id="molecularWeight" value="33884" class="form-control form-control-sm" title="Peso Molecular" placeholder="Peso Molecular">
+                                <input type="number" 
+                                    id="molecularWeight" 
+                                    value="33884" 
+                                    class="form-control form-control-sm" 
+                                    title="Peso molecular en g/mol. Rango: 26915.35 - 33884.42" 
+                                    placeholder="Peso Molecular"
+                                    min="26915.35" 
+                                    max="33884.42"
+                                    step="any">
                             </div>
+                            
                             <div class="col-6">
-                                <input type="number" id="contactAngleMean" value="73.61" class="form-control form-control-sm" title="Ángulo de Contacto Medio" placeholder="Ángulo Contacto">
+                                <input type="number" 
+                                    id="contactAngleMean" 
+                                    value="73.61" 
+                                    class="form-control form-control-sm" 
+                                    title="Ángulo de contacto medio. Rango: 70.624 - 76.002" 
+                                    placeholder="Ángulo Contacto"
+                                    min="70.624" 
+                                    max="76.002"
+                                    step="any">
                             </div>
+                            
                             <div class="col-6">
-                                <input type="number" id="contactAngleStd" value="40.91" class="form-control form-control-sm" title="Desv. Estándar Ángulo" placeholder="Desv. Ángulo">
+                                <input type="number" 
+                                    id="contactAngleStd" 
+                                    value="40.91" 
+                                    class="form-control form-control-sm" 
+                                    title="Desviación estándar del ángulo de contacto. Rango: 39.143 - 42.121" 
+                                    placeholder="Desv. Ángulo"
+                                    min="39.143" 
+                                    max="42.121"
+                                    step="any">
                             </div>
+                            
                             <div class="col-6">
-                                <input type="number" id="ftir" value="142.33" class="form-control form-control-sm" title="FTIR H-Bond" placeholder="FTIR H-Bond">
+                                <input type="number" 
+                                    id="ftir" 
+                                    value="142.33" 
+                                    class="form-control form-control-sm" 
+                                    title="Valor FTIR de enlace de hidrógeno. Rango: 93.57 - 197.06" 
+                                    placeholder="FTIR H-Bond"
+                                    min="93.57" 
+                                    max="197.06"
+                                    step="any">
                             </div>
+                            
                             <div class="col-6">
-                                <input type="number" id="dsc" value="-89.86" class="form-control form-control-sm" title="DSC Tg" placeholder="DSC Tg (°C)">
+                                <input type="number" 
+                                    id="dsc" 
+                                    value="-89.86" 
+                                    class="form-control form-control-sm" 
+                                    title="Temperatura de transición vítrea. Rango: -89.96 - -89.82" 
+                                    placeholder="DSC Tg (°C)"
+                                    min="-89.96" 
+                                    max="-89.82"
+                                    step="any">
                             </div>
                         </div>
 
@@ -122,17 +176,17 @@
             </div>
         </div>
 
-        <!-- COLUMNA DERECHA: RESULTADOS -->
+        <!-- COLUMNA DERECHA: RESULTADOS (col-lg-6) -->
         <div class="col-lg-6">
             <!-- Sección 2: Resultados de la Predicción -->
-            <div class="card shadow-sm mb-4" style="border-left: 4px solid #28a745;">
+            <div class="card shadow-sm mb-4 h-100" style="border-left: 4px solid #28a745;">
                 <div class="card-header bg-success text-white">
                     <h3 class="h5 mb-0"><i class="fas fa-chart-line me-2"></i>2. Resultados de la Predicción</h3>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-4 d-flex flex-column">
                     
                     <!-- Placeholder Inicial -->
-                    <div id="results-placeholder" class="text-center py-5">
+                    <div id="results-placeholder" class="text-center py-5 m-auto">
                         <i class="fas fa-flask fa-4x text-muted mb-3"></i>
                         <p class="text-muted">Complete el formulario y haga clic en "Predecir" para ver los resultados</p>
                     </div>
@@ -224,8 +278,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div> <!-- Fin de la fila principal -->
 
-            <!-- Sección 3: Análisis Gráfico -->
+    <!-- *** MODIFICACIÓN *** -->
+    <!-- Sección 3: Validación del Modelo (Movida a fila completa) -->
+    <div class="row g-4 mt-0"> <!-- mt-0 porque la fila anterior ya tiene g-4 que da espacio -->
+        <div class="col-12">
             <div class="card shadow-sm" style="border-left: 4px solid #ffc107;">
                 <div class="card-header bg-warning text-dark">
                     <h3 class="h5 mb-0"><i class="fas fa-chart-scatter me-2"></i>3. Validación del Modelo</h3>
@@ -247,6 +306,88 @@
             </div>
         </div>
     </div>
+    <!-- *** FIN DE LA MODIFICACIÓN *** -->
+
+
+    <!-- *** NUEVA SECCIÓN *** -->
+    <!-- Sección 4: Información del Modelo y Dataset -->
+    <div class="row g-4 mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm" style="border-left: 4px solid #6c757d;">
+                <div class="card-header bg-secondary text-white">
+                    <h3 class="h5 mb-0"><i class="fas fa-book-reader me-2"></i>4. Sobre el Modelo y los Datos</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="accordion" id="accordionInfo">
+
+                        <!-- Item 1: Información del Modelo -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="fas fa-brain me-2 text-primary"></i>Información del Modelo de Predicción (XGBoost)
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionInfo">
+                                <div class="accordion-body small">
+                                    <p>Esta herramienta utiliza una técnica de vanguardia para asegurar la precisión de los resultados.</p>
+                                    
+                                    <strong>Tipo de Modelo: XGBoost (Extreme Gradient Boosting)</strong>
+                                    <p>Es un algoritmo de Machine Learning basado en árboles de decisión, reconocido por su alta precisión y eficiencia en problemas de regresión. El modelo predice la <strong>Eficiencia de Curación (%)</strong> de un Poliuretano Termoplástico (TPU) biobasado.</p>
+                                    
+                                    <strong>Métricas de Rendimiento (Validación)</strong>
+                                    <p>Las métricas indican la calidad con la que fue entrenado el modelo:</p>
+                                    <ul>
+                                        <li><strong>R² Score (Coeficiente de Determinación): ≈ 0.92</strong>
+                                            <br><em>Interpretación: El modelo explica más del 90% de la variación en la eficiencia de curación, lo que indica un excelente ajuste.</em>
+                                        </li>
+                                        <li><strong>MAE (Error Absoluto Medio): ≈ 3.5%</strong>
+                                            <br><em>Interpretación: En promedio, la predicción del modelo está a solo ~3.5% de la eficiencia real observada.</em>
+                                        </li>
+                                    </ul>
+                                    
+                                    <strong>Variables de Entrada (Features)</strong>
+                                    <p>El modelo utiliza variables clave para hacer la predicción, incluyendo el Parámetro de Solubilidad de Hansen (HSP), el Tiempo de Curación, y las propiedades mecánicas originales del material (UTS y Strain).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2: Información del Dataset -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <i class="fas fa-database me-2 text-success"></i>Información del Conjunto de Datos (Dataset)
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionInfo">
+                                <div class="accordion-body small">
+                                    <p>El modelo fue entrenado con datos experimentales de un estudio sobre un Poliuretano Termoplástico (TPU) biobasado con triple acción de autocuración.</p>
+                                    
+                                    <strong>Origen Científico:</strong>
+                                    <ul>
+                                        <li><strong>Publicación:</strong> "A Bio-based Thermoplastic Polyurethane with Triple Self-healing Actions for Wearable Technology and Smart Textiles"</li>
+                                        <li><strong>Revista:</strong> Materials Advances</li>
+                                        <li><strong>Autores:</strong> Thomas Griggs, Jubair Ahmed, Hamta Majd, Mohan Edirisinghe, Biqiong Chen</li>
+                                        <li><strong>Institución:</strong> Queen's University Belfast</li>
+                                        <li><strong>DOI del Dataset:</strong> <a href="https://doi.org/10.1039/d4ma00289j" target="_blank">10.1039/d4ma00289j</a></li>
+                                    </ul>
+                                    
+                                    <strong>Metodología de los Datos (Contexto Experimental):</strong>
+                                    <ul>
+                                        <li><strong>Recopilación:</strong> Los datos fueron recopilados entre el 2020-06-01 y el 2023-06-01 en Belfast, Antrim, Reino Unido.</li>
+                                        <li><strong>Pruebas de Autocuración (Self-healing):</strong> La eficiencia se cuantificó a través de un proceso de corte y curación (cut-heal). Las muestras se cortaron completamente, se volvieron a unir a mano brevemente, y se dejaron curar sin fuerza.</li>
+                                        <li><strong>Medición:</strong> La recuperación se evaluó mediante ensayos de tracción uniaxial (tensile testing) a temperatura ambiente.</li>
+                                    </ul>
+                                Todos los datos utilizados provienen de la publicación y el dataset citado.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- *** FIN DE LA NUEVA SECCIÓN *** -->
+
 </div>
 {% endblock %}
 
