@@ -42,6 +42,9 @@ class XGBoostTPUPropertyPredictor:
         self.Y = None
         self.X_scaled = None
         
+        # Métricas de evaluación guardadas
+        self.evaluation_metrics = None
+        
         # Definición de variables
         self.feature_names = [
             'HSP',
@@ -72,7 +75,7 @@ class XGBoostTPUPropertyPredictor:
             print(f"  {i}. {targ}")
         print("="*70)
 
-    def load_data(self, filepath='datasets/dataset_ml_final.csv'):
+    def load_data(self, filepath='dataset_ml_final.csv'):
         """
         Carga el dataset y prepara las variables X e Y.
         Aplica normalización a las entradas.
@@ -130,95 +133,6 @@ class XGBoostTPUPropertyPredictor:
         print(f"\n✓ Datos preparados: {len(df)} muestras")
         return True
 
-    def optimize_hyperparameters(self, n_splits=5, n_iter=100):
-        """
-        Optimiza los hiperparámetros de XGBoost usando RandomizedSearchCV.
-        ¡Esto es mucho más rápido que GridSearchCV!
-        
-        Parameters:
-        -----------
-        n_splits : int
-            Número de "folds" para K-Fold. 5 es un buen estándar.
-            (LOOCV no se usa aquí, es demasiado lento para optimizar).
-        n_iter : int
-            Número de combinaciones de parámetros aleatorios a probar.
-        """
-        if self.X_scaled is None or self.Y is None:
-            print("❌ Error: Primero debes cargar los datos con load_data()")
-            return
-        
-        print("\n" + "="*70)
-        print("OPTIMIZACIÓN DE HIPERPARÁMETROS (RandomizedSearchCV)")
-        print("="*70)
-        
-        # --- 1. Definir el espacio de búsqueda (DISTRIBUCIONES) ---
-        # Usamos distribuciones (rangos) en lugar de listas fijas
-        param_distributions = {
-            'estimator__max_depth': randint(3, 6), # Enteros entre 3 y 5
-            'estimator__learning_rate': uniform(0.01, 0.2), # Continuo entre 0.01 y 0.21
-            'estimator__n_estimators': randint(50, 250), # Enteros entre 50 y 249
-            'estimator__min_child_weight': randint(1, 6),
-            'estimator__subsample': uniform(0.7, 0.3), # Continuo entre 0.7 y 1.0
-            'estimator__colsample_bytree': uniform(0.7, 0.3),
-            'estimator__reg_alpha': uniform(0.0, 1.0),
-            'estimator__reg_lambda': uniform(1.0, 4.0)
-        }
-        
-        print(f"Parámetros a optimizar (se probarán {n_iter} combinaciones aleatorias):")
-        for key, value in param_distributions.items():
-            print(f"  - {key}: {value.dist.name if hasattr(value, 'dist') else 'Lista'}")
-        
-        # --- 2. Configurar validación cruzada (K-Fold) ---
-        # Usar K-Fold para la optimización es la clave para la velocidad.
-        # LOOCV solo se usará para la EVALUACIÓN FINAL.
-        cv = KFold(n_splits=n_splits, shuffle=True, random_state=self.random_state)
-        cv_name = f"{n_splits}-Fold"
-        print(f"\nValidación cruzada: {cv_name}")
-        print(f"Total de 'fits' del modelo: {n_iter} combinaciones * {n_splits} folds = {n_iter * n_splits} (¡mucho más rápido!)")
-        
-        # --- 3. Crear modelo base ---
-        xgb_base = MultiOutputRegressor(
-            XGBRegressor(
-                random_state=self.random_state,
-                objective='reg:squarederror',
-                tree_method='auto',
-                n_jobs=1 # n_jobs=-1 en el estimador base puede causar problemas con n_jobs=-1 en la búsqueda
-            )
-        )
-        
-        # --- 4. RandomizedSearchCV ---
-        print(f"\n⏳ Ejecutando RandomizedSearchCV (probando {n_iter} combinaciones)...\n")
-        
-        random_search = RandomizedSearchCV(
-            estimator=xgb_base,
-            param_distributions=param_distributions, # Cambiado de param_grid
-            n_iter=n_iter,                         # ¡Parámetro clave añadido!
-            cv=cv,
-            scoring='r2',
-            n_jobs=-1, # Usar todos los núcleos para la búsqueda
-            verbose=2, # Aumentado a 2 para ver más detalles
-            random_state=self.random_state # Para que la búsqueda aleatoria sea reproducible
-        )
-        
-        # Asumiendo que X_scaled y Y están disponibles como propiedades de la clase
-        random_search.fit(self.X_scaled, self.Y)
-        
-        # --- 5. Guardar mejores parámetros ---
-        self.best_params = random_search.best_params_
-        self.model = random_search.best_estimator_
-        self.is_trained = True
-        
-        print("\n" + "="*70)
-        print("RESULTADOS DE OPTIMIZACIÓN (RandomizedSearch)")
-        print("="*70)
-        print(f"Mejor R² Score (CV): {random_search.best_score_:.4f}")
-        print(f"\nMejores hiperparámetros encontrados:")
-        for key, value in self.best_params.items():
-            print(f"  - {key}: {value}")
-        print("="*70)
-        
-        return self.best_params
-
     def train_final_model(self, custom_params=None):
         """
         Entrena el modelo final con todos los datos.
@@ -231,7 +145,6 @@ class XGBoostTPUPropertyPredictor:
         if self.X_scaled is None or self.Y is None:
             print("❌ Error: Primero debes cargar los datos con load_data()")
             return
-        
         
         # Usar parámetros
         if custom_params is not None:
@@ -276,6 +189,7 @@ class XGBoostTPUPropertyPredictor:
     def evaluate_model_loocv(self):
         """
         Evalúa el modelo usando Leave-One-Out Cross-Validation.
+        Guarda las métricas para mostrarlas en la interfaz.
         """
         if self.X_scaled is None or self.Y is None:
             print("❌ Error: Primero debes cargar los datos")
@@ -341,49 +255,29 @@ class XGBoostTPUPropertyPredictor:
         
         print("="*70)
         
-        return {
+        # Guardar métricas para la interfaz
+        self.evaluation_metrics = {
             'MAE': mae_scores,
             'RMSE': rmse_scores,
-            'R2': r2_scores
+            'R2': r2_scores,
+            'y_true': y_true_all,
+            'y_pred': y_pred_all
         }
+        
+        return self.evaluation_metrics
 
-    def get_feature_importance(self):
+    def get_evaluation_metrics(self):
         """
-        Analiza la importancia de cada feature en las predicciones.
-        XGBoost proporciona importancias nativas muy interpretables.
+        Retorna las métricas de evaluación del modelo.
         """
-        if not self.is_trained:
-            print("❌ Error: El modelo debe ser entrenado primero.")
-            return
-        
-        print("\n" + "="*70)
-        print("IMPORTANCIA DE LAS VARIABLES DE ENTRADA (XGBoost)")
-        print("="*70)
-        
-        # Obtener importancias de cada estimador (uno por target)
-        importances_list = []
-        for estimator in self.model.estimators_:
-            importances_list.append(estimator.feature_importances_)
-        
-        # Promedio de importancias
-        avg_importances = np.mean(importances_list, axis=0)
-        
-        feature_importance_df = pd.DataFrame({
-            'Feature': self.feature_names,
-            'Importance': avg_importances
-        }).sort_values('Importance', ascending=False)
-        
-        print(feature_importance_df.to_string(index=False))
-        
-        print("\n📈 Top 3 Features más importantes:")
-        for i in range(min(3, len(feature_importance_df))):
-            feat = feature_importance_df.iloc[i]
-            print(f"  {i+1}. {feat['Feature']}: {feat['Importance']*100:.2f}%")
-        
-        return feature_importance_df
+        if self.evaluation_metrics is None:
+            print("⚠️ No hay métricas disponibles. Ejecuta evaluate_model_loocv() primero.")
+            return None
+        return self.evaluation_metrics
 
-    def predict(self, hsp, healing_time, peak_logm, molecular_weight, UTS_Original_Mean, Strain_Original_Mean, 
-                contact_angle_mean, contact_angle_std, ftir_value, dsc_tg):
+    def predict(self, hsp, healing_time, UTS_Original_Mean, Strain_Original_Mean, 
+                peak_logm, molecular_weight, contact_angle_mean, contact_angle_std, 
+                ftir_value, dsc_tg):
         """
         Predice las propiedades mecánicas dados los parámetros de entrada.
         """
@@ -424,7 +318,7 @@ class XGBoostTPUPropertyPredictor:
         print("PROPIEDADES PREDICHAS:")
         print("="*70)
         for key, value in results.items():
-            unit = "%" if "HE_UTS_eficiency" in key else "%" if "HE_strain_eficiency" in key or "HE" in key else ""
+            unit = "%"
             print(f"  • {key}: {value:.3f} {unit}")
         print("="*70)
         
@@ -442,8 +336,7 @@ class XGBoostTPUPropertyPredictor:
         
         y_pred = self.model.predict(self.X_scaled)
         
-        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-        axes = axes.flatten()
+        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
         
         for i, target in enumerate(self.target_names):
             ax = axes[i]
@@ -459,8 +352,8 @@ class XGBoostTPUPropertyPredictor:
             
             r2 = r2_score(y_true, y_pred_target)
             
-            ax.set_xlabel('Valor Real', fontsize=11)
-            ax.set_ylabel('Valor Predicho', fontsize=11)
+            ax.set_xlabel('Valor Real (%)', fontsize=11)
+            ax.set_ylabel('Valor Predicho (%)', fontsize=11)
             ax.set_title(f'{target} (XGBoost)\nR² = {r2:.3f}', fontsize=12, fontweight='bold')
             ax.legend()
             ax.grid(True, alpha=0.3)
@@ -484,68 +377,35 @@ if __name__ == "__main__":
     predictor = XGBoostTPUPropertyPredictor(random_state=42)
     
     # 2. Cargar datos
-    if not predictor.load_data(filepath='datasets/dataset_ml_final.csv'):
+    if not predictor.load_data(filepath='dataset_ml_final.csv'):
         print("\n❌ Error al cargar datos.")
         exit(1)
     
-    # 3. Optimizar hiperparámetros
-    print("\n" + "⚙️"*35)
-    choice = input("¿Deseas ejecutar RandomSearchCV? (puede tardar 20-60 minutos) [y/n]: ")
-    
-    if choice.lower() == 'y':
-        best_params = predictor.optimize_hyperparameters()
-    else:
-        print("⏭️  Saltando optimización. Usando parámetros por defecto.")
-    
-    # 4. Entrenar modelo final
+    # 3. Entrenar modelo final
     predictor.train_final_model()
     
-    # 5. Evaluar modelo
+    # 4. Evaluar modelo
     metrics = predictor.evaluate_model_loocv()
     
-    # 6. Importancia de features
-    feature_importance = predictor.get_feature_importance()
-    
-    # 7. Predicciones de ejemplo
+    # 5. Predicciones de ejemplo
     print("\n" + "🔮"*35)
     print("EJEMPLOS DE PREDICCIÓN")
     print("🔮"*35)
     
     # Ejemplo 1: Valor intermedio
-    print("\n--- Ejemplo 1: HSP=0.38, Healing Time=1.0 hrs ---")
-    predictor.predict(
-        hsp=0.38,
-        healing_time=1.0,
-        UTS_Original_Mean=0.31,
-        Strain_Original_Mean=1255.0,
-        peak_logm=4.5,
-        molecular_weight=31623,
-        contact_angle_mean=90.0,
-        contact_angle_std=2.5,
-        ftir_value=0.85,
-        dsc_tg=-40.0
-    )
-    
-    # Ejemplo 2: Material undamaged
-    print("\n--- Ejemplo 2: HSP=0.40, Undamaged (Healing Time=0.0) ---")
+    print("\n--- Ejemplo 1: HSP=0.40, Healing Time=1.0 hrs ---")
     predictor.predict(
         hsp=0.40,
-        healing_time=0.0,
-        UTS_Original_Mean=0.268,
-        Strain_Original_Mean=969.0,
-        peak_logm=4.6,
-        molecular_weight=39811,
-        contact_angle_mean=92.0,
-        contact_angle_std=2.0,
-        ftir_value=0.88,
-        dsc_tg=-38.0
+        healing_time=1.0,
+        UTS_Original_Mean=0.37,
+        Strain_Original_Mean=1700.0,
+        peak_logm=4.53,
+        molecular_weight=33884.42,
+        contact_angle_mean=73.61,
+        contact_angle_std=40.91,
+        ftir_value=142.33,
+        dsc_tg=-89.86
     )
-    
-    # 8. Generar gráficos
-    try:
-        predictor.plot_predictions_vs_actual()
-    except:
-        print("\n⚠️  No se pudieron generar los gráficos")
     
     print("\n" + "✅"*35)
     print("PIPELINE COMPLETADO EXITOSAMENTE")

@@ -102,3 +102,52 @@
     font-weight: 500;
     letter-spacing: 0.5px;
 }
+
+/* Estilos para el simulador TPU */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.form-range::-webkit-slider-thumb {
+    background: #0d6efd;
+}
+
+.form-range::-moz-range-thumb {
+    background: #0d6efd;
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Animación para el botón de predicción */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
+}
+
+#predict-button:hover {
+    animation: pulse 1.5s infinite;
+}
+
+/* Estilos para el código QR */
+#qr-code-img {
+    max-width: 220px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+#qr-code-img:hover {
+    transform: scale(1.05);
+}

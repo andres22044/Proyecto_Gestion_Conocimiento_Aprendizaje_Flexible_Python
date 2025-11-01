@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}Simulador de Eficiencia TPU - PLIX{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <!-- Encabezado -->
+    <header class="mb-5 text-center">
+        <h1 class="display-4 fw-bold" style="color: #004a80;">
+            <i class="fas fa-flask me-2"></i>Simulador de Eficiencia de Curación TPU
+        </h1>
+        <p class="fs-5 text-muted">Predicción de eficiencia para materiales auto-reparables PLIX</p>
+    </header>
+
+    <div class="row g-4">
+
+        <!-- COLUMNA IZQUIERDA: ENTRADA DE DATOS -->
+        <div class="col-lg-6">
+            <!-- Sección 1: Variables de Entrada -->
+            <div class="card shadow-sm mb-4" style="border-left: 4px solid #0d6efd;">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="h5 mb-0"><i class="fas fa-sliders-h me-2"></i>1. Parámetros de Entrada</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form id="prediction-form">
+                        
+                        <!-- ID de Muestra (Opcional) -->
+                        <div class="mb-4">
+                            <label for="sampleId" class="form-label fw-semibold text-muted">
+                                <i class="fas fa-barcode me-1"></i>ID de Muestra (Opcional)
+                            </label>
+                            <input type="text" id="sampleId" class="form-control" placeholder="Ej: PLIX-001" value="PLIX-SAMPLE-001">
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h6 class="fw-bold text-primary mb-3">Variables de Proceso de Curación</h6>
+
+                        <!-- HSP -->
+                        <div class="mb-3">
+                            <label for="hsp" class="form-label fw-medium">
+                                Parámetro de Solubilidad de Hansen (HSP)
+                            </label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="range" id="hsp" class="form-range" min="0.35" max="0.45" step="0.01" value="0.40">
+                                <span id="hsp-value" class="badge bg-primary fs-6" style="min-width: 50px;">0.40</span>
+                            </div>
+                            <small class="text-muted">Rango: 0.35 - 0.45</small>
+                        </div>
+
+                        <!-- Healing Time -->
+                        <div class="mb-3">
+                            <label for="healingTime" class="form-label fw-medium">
+                                Tiempo de Curación (Horas)
+                            </label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="range" id="healingTime" class="form-range" min="0" max="3" step="0.1" value="0.0">
+                                <span id="healingTime-value" class="badge bg-warning text-dark fs-6" style="min-width: 65px;">0.0 h</span>
+                            </div>
+                            <small class="text-muted">Rango: 0 - 3 horas</small>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h6 class="fw-bold text-success mb-3">Datos de Referencia de la Propiedad</h6>
+
+                        <!-- UTS Original -->
+                        <div class="mb-3">
+                            <label for="utsOriginal" class="form-label fw-medium">
+                                Estrés Máximo Original (UTS Original) [MPa]
+                            </label>
+                            <input type="number" id="utsOriginal" class="form-control" step="0.01" value="0.3675" min="0.14" max="0.63" required>
+                            <small class="text-muted">Rango válido: 0.14 - 0.63 MPa (del dataset de entrenamiento)</small>
+                        </div>
+
+                        <!-- Strain Original -->
+                        <div class="mb-3">
+                            <label for="strainOriginal" class="form-label fw-medium">
+                                Deformación Original (Strain Original) [%]
+                            </label>
+                            <input type="number" id="strainOriginal" class="form-control" step="0.1" value="973.92" min="116.37" max="1799.37" required>
+                            <small class="text-muted">Rango válido: 116.37 - 1799.37 % (del dataset de entrenamiento)</small>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h6 class="fw-bold text-secondary mb-3">Parámetros Adicionales del Material</h6>
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label small">Peak logM</label>
+                                <input type="number" id="peakLogM" value="4.53" min="4.43" max="4.53" step="0.01" class="form-control form-control-sm" title="Peak logM (4.43-4.53)">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Peso Molecular</label>
+                                <input type="number" id="molecularWeight" value="33884" min="26915" max="33884" step="1" class="form-control form-control-sm" title="Peso Molecular (26915-33884)">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Ángulo Contacto (°)</label>
+                                <input type="number" id="contactAngleMean" value="73.61" min="70.62" max="76.00" step="0.01" class="form-control form-control-sm" title="Ángulo Contacto (70.62-76.00)">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Desv. Ángulo (°)</label>
+                                <input type="number" id="contactAngleStd" value="40.91" min="39.14" max="42.12" step="0.01" class="form-control form-control-sm" title="Desv. Estándar (39.14-42.12)">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">FTIR H-Bond</label>
+                                <input type="number" id="ftir" value="142.33" min="93.57" max="197.06" step="0.01" class="form-control form-control-sm" title="FTIR H-Bond (93.57-197.06)">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">DSC Tg (°C)</label>
+                                <input type="number" id="dsc" value="-89.86" min="-89.96" max="-89.82" step="0.01" class="form-control form-control-sm" title="DSC Tg (-89.96 a -89.82)">
+                            </div>
+                        </div>
+
+                        <!-- Botón de Predecir -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" id="predict-button" class="btn btn-primary btn-lg fw-semibold shadow">
+                                <span id="button-text">
+                                    <i class="fas fa-magic me-2"></i>Predecir Eficiencia de Curación
+                                </span>
+                                <span id="button-loader" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: RESULTADOS -->
+        <div class="col-lg-6">
+            <!-- Sección 2: Resultados de la Predicción -->
+            <div class="card shadow-sm mb-4" style="border-left: 4px solid #28a745;">
+                <div class="card-header bg-success text-white">
+                    <h3 class="h5 mb-0"><i class="fas fa-chart-line me-2"></i>2. Resultados de la Predicción</h3>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <!-- Placeholder Inicial -->
+                    <div id="results-placeholder" class="text-center py-5">
+                        <i class="fas fa-flask fa-4x text-muted mb-3"></i>
+                        <p class="text-muted">Complete el formulario y haga clic en "Predecir" para ver los resultados</p>
+                    </div>
+
+                    <!-- Contenedor de Resultados (Oculto inicialmente) -->
+                    <div id="results-container" class="visually-hidden">
+                        
+                        <!-- A. PREDICCIÓN CENTRAL -->
+                        <div class="alert alert-info border-start border-4 border-info mb-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-bullseye me-2"></i>Eficiencias de Curación Predichas</h5>
+                            
+                            <div class="row text-center g-3">
+                                <div class="col-6">
+                                    <div class="p-3 bg-white rounded shadow-sm">
+                                        <p class="mb-1 small text-muted fw-semibold">Eficiencia de Estrés</p>
+                                        <h3 id="result-uts-efficiency" class="display-6 fw-bold text-primary mb-0">0.0%</h3>
+                                        <p class="small text-muted mb-0">(HE_UTS_Efficiency)</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-white rounded shadow-sm">
+                                        <p class="mb-1 small text-muted fw-semibold">Eficiencia de Elongación</p>
+                                        <h3 id="result-elongation-efficiency" class="display-6 fw-bold text-success mb-0">0.0%</h3>
+                                        <p class="small text-muted mb-0">(HE_Strain_Efficiency)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- B. MÉTRICAS DE CONFIANZA DEL MODELO -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3"><i class="fas fa-check-circle me-2 text-success"></i>Confianza del Modelo</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Métrica</th>
+                                            <th>Propiedad</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="small">
+                                        <tr>
+                                            <td>R² Score</td>
+                                            <td>HE_UTS_Efficiency</td>
+                                            <td class="fw-bold text-success">{{ model_info.r2_uts }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>R² Score</td>
+                                            <td>HE_Strain_Efficiency</td>
+                                            <td class="fw-bold text-success">{{ model_info.r2_elongation }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MAE</td>
+                                            <td>HE_UTS_Efficiency</td>
+                                            <td>{{ model_info.mae_uts }}%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MAE</td>
+                                            <td>HE_Strain_Efficiency</td>
+                                            <td>{{ model_info.mae_elongation }}%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="small text-muted mb-0">
+                                <i class="fas fa-info-circle me-1"></i>
+                                R² > 0.90 indica excelente capacidad predictiva. MAE muestra el error promedio.
+                            </p>
+                        </div>
+
+                        <!-- C. CÓDIGO QR (ETIQUETA DE PRODUCCIÓN) -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3"><i class="fas fa-qrcode me-2 text-warning"></i>Etiqueta de Producción (QR)</h6>
+                            <div class="text-center p-3 bg-light rounded border">
+                                <img id="qr-code-img" src="" alt="Código QR" class="img-fluid d-none" style="max-width: 220px;">
+                                <p id="qr-placeholder" class="text-muted small mb-0">El código QR aparecerá aquí</p>
+                            </div>
+                            <div class="d-grid gap-2 mt-2">
+                                <button id="download-qr-btn" class="btn btn-sm btn-outline-secondary d-none" onclick="downloadQR()">
+                                    <i class="fas fa-download me-1"></i>Descargar Etiqueta QR
+                                </button>
+                                <a id="view-detail-btn" href="#" class="btn btn-sm btn-primary d-none">
+                                    <i class="fas fa-external-link-alt me-1"></i>Ver Detalle Completo
+                                </a>
+                            </div>
+                            <p class="small text-muted mt-2 mb-0">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Escanea este código para ver todos los detalles de la predicción en cualquier dispositivo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección 3: Análisis Gráfico -->
+            <div class="card shadow-sm" style="border-left: 4px solid #ffc107;">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="h5 mb-0"><i class="fas fa-chart-scatter me-2"></i>3. Validación del Modelo</h3>
+                </div>
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-dark mb-3">Gráfico Real vs. Predicho</h6>
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='model_validation_chart.png') }}" 
+                             alt="Gráfico de Validación" 
+                             class="img-fluid rounded border shadow-sm"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'300\'%3E%3Crect fill=\'%23f8f9fa\' width=\'600\' height=\'300\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%236c757d\' font-size=\'18\'%3EGráfico no disponible%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <p class="small text-muted mt-3 mb-0">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Los puntos cercanos a la línea diagonal roja indican predicciones precisas. 
+                        El R² Score superior a 0.90 confirma la alta confiabilidad del modelo.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/modelofinal.js') }}"></script>
+{% endblock %}
