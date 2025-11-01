@@ -220,6 +220,182 @@ def proyecto():
     return render_template('sobre_proyecto.html')
 
 # =================================================================
+#                  FUNCIONES DE BASE DE DATOS PARA PREDICCIONES
+# =================================================================
+
+def save_prediction_to_db(sample_id, username, input_data, prediction_results):
+    """
+    Guarda una predicción en la base de datos.
+    Retorna el ID de la predicción guardada o None si hay error.
+    """
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo conectar a la base de datos para guardar la predicción")
+        return None
+    
+    try:
+        cursor = conn.cursor()
+        
+        query = """
+        INSERT INTO tpu_resultados_muestra (
+            sample_id, timestamp, user_name,
+            HSP, Healing_Time_hrs, UTS_Original_MPa, Strain_Original_percent,
+            Peak_logM, Molecular_Weight, Contact_Angle_Mean, Contact_Angle_Std,
+            FTIR_H_Bond, DSC_Tg_C,
+            HE_UTS_Efficiency_percent, HE_Elongation_Efficiency_percent
+        ) VALUES (
+            %s, %s, %s,
+            %s, %s, %s, %s,
+            %s, %s, %s, %s,
+            %s, %s,
+            %s, %s
+        )
+        """
+        
+        values = (
+            sample_id,
+            datetime.now(),
+            username,
+            input_data['hsp'],
+            input_data['healing_time'],
+            input_data['UTS_Original_Mean'],
+            input_data['Strain_Original_Mean'],
+            input_data['peak_logm'],
+            input_data['molecular_weight'],
+            input_data['contact_angle_mean'],
+            input_data['contact_angle_std'],
+            input_data['ftir_value'],
+            input_data['dsc_tg'],
+            prediction_results['HE_UTS_Mean'],
+            prediction_results['HE_Elongation_Mean']
+        )
+        
+        cursor.execute(query, values)
+        conn.commit()
+        
+        prediction_id = cursor.lastrowid
+        
+        cursor.close()
+        conn.close()
+        
+        logger.info(f"Predicción guardada con ID: {prediction_id}")
+        return prediction_id
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error al guardar predicción en BD: {err}")
+        if conn:
+            conn.rollback()
+        return None
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+
+def get_all_predictions():
+    """
+    Obtiene todas las predicciones de la base de datos.
+    Retorna una lista de diccionarios con los datos.
+    """
+    conn = get_db_connection()
+    if not conn:
+        return []
+    
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        query = """
+        SELECT ID, sample_id, timestamp, user_name,
+               HE_UTS_Efficiency_percent, HE_Elongation_Efficiency_percent
+        FROM tpu_resultados_muestra
+        ORDER BY timestamp DESC
+        """
+        
+        cursor.execute(query)
+        predictions = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return predictions
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error al obtener predicciones: {err}")
+        return []
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+
+def get_prediction_by_id(prediction_id):
+    """
+    Obtiene una predicción específica por su ID.
+    Retorna un diccionario con todos los datos o None si no existe.
+    """
+    conn = get_db_connection()
+    if not conn:
+        return None
+    
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        query = """
+        SELECT * FROM tpu_resultados_muestra
+        WHERE ID = %s
+        """
+        
+        cursor.execute(query, (prediction_id,))
+        prediction = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        return prediction
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error al obtener predicción {prediction_id}: {err}")
+        return None
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+
+def delete_prediction_by_id(prediction_id):
+    """
+    Elimina una predicción de la base de datos.
+    Retorna True si se eliminó correctamente, False en caso contrario.
+    """
+    conn = get_db_connection()
+    if not conn:
+        return False
+    
+    try:
+        cursor = conn.cursor()
+        
+        query = "DELETE FROM tpu_resultados_muestra WHERE ID = %s"
+        cursor.execute(query, (prediction_id,))
+        conn.commit()
+        
+        deleted = cursor.rowcount > 0
+        
+        cursor.close()
+        conn.close()
+        
+        if deleted:
+            logger.info(f"Predicción {prediction_id} eliminada correctamente")
+        
+        return deleted
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error al eliminar predicción {prediction_id}: {err}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+
+# =================================================================
 #                       RUTAS DEL SIMULADOR TPU
 # =================================================================
 
@@ -250,7 +426,8 @@ def modelo_final():
 @app.route('/predict', methods=['POST'])
 def predict():
     """
-    API para el simulador. Recibe JSON, ejecuta el modelo y devuelve predicción con QR.
+    API para el simulador. Recibe JSON, ejecuta el modelo, 
+    guarda en BD y devuelve predicción con URL para QR.
     """
     if 'username' not in session:
         return jsonify({"error": "No autorizado"}), 401
@@ -278,41 +455,38 @@ def predict():
         if prediction_results is None:
             return jsonify({"error": "Error al realizar la predicción"}), 500
         
-        # *** SOLUCIÓN AL ERROR: Convertir numpy.float32 a float de Python ***
+        # 3. Convertir numpy.float32 a float de Python
         prediction_results_clean = {
             key: float(value) for key, value in prediction_results.items()
         }
         
-        # 3. Preparar datos para el QR (con valores limpios)
-        qr_data = {
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'user': session['username'],
-            'sample_id': data.get('sampleId', 'N/A'),
-            'inputs': {
-                'HSP': round(input_data['hsp'], 3),
-                'Healing_Time_hrs': round(input_data['healing_time'], 2),
-                'UTS_Original_MPa': round(input_data['UTS_Original_Mean'], 3),
-                'Strain_Original_percent': round(input_data['Strain_Original_Mean'], 1),
-                'Peak_logM': round(input_data['peak_logm'], 2),
-                'Molecular_Weight': round(input_data['molecular_weight'], 0),
-                'Contact_Angle_Mean': round(input_data['contact_angle_mean'], 2),
-                'Contact_Angle_Std': round(input_data['contact_angle_std'], 2),
-                'FTIR_H-Bond': round(input_data['ftir_value'], 2),
-                'DSC_Tg_C': round(input_data['dsc_tg'], 2)
-            },
-            'predictions': {
-                'HE_UTS_Efficiency_percent': round(prediction_results_clean['HE_UTS_Mean'], 2),
-                'HE_Elongation_Efficiency_percent': round(prediction_results_clean['HE_Elongation_Mean'], 2)
-            }
-        }
+        # 4. Guardar en la base de datos
+        sample_id = data.get('sampleId', f'PLIX-AUTO-{int(time.time())}')
+        prediction_id = save_prediction_to_db(
+            sample_id=sample_id,
+            username=session['username'],
+            input_data=input_data,
+            prediction_results=prediction_results_clean
+        )
         
-        # 4. Generar código QR
-        qr_image_base64 = generate_qr_code(qr_data)
+        if prediction_id is None:
+            logger.warning("No se pudo guardar la predicción en la BD, pero se continúa")
         
-        # 5. Añadir el QR a los resultados (usar valores limpios)
+        # 5. Generar URL de detalle para el QR
+        if prediction_id:
+            detail_url = url_for('prediction_detail', prediction_id=prediction_id, _external=True)
+        else:
+            detail_url = url_for('predictions_index', _external=True)
+        
+        # 6. Generar código QR con la URL
+        qr_image_base64 = generate_qr_code_with_url(detail_url)
+        
+        # 7. Añadir el QR y el ID a los resultados
         prediction_results_clean['qr_code'] = qr_image_base64
+        prediction_results_clean['prediction_id'] = prediction_id
+        prediction_results_clean['detail_url'] = detail_url
         
-        # 6. Devolver todo como JSON (con valores limpios)
+        # 8. Devolver todo como JSON
         return jsonify(prediction_results_clean)
 
     except ValueError as ve:
@@ -325,22 +499,65 @@ def predict():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-def generate_qr_code(data):
+
+@app.route('/predictions')
+def predictions_index():
     """
-    Genera un código QR con los datos de predicción
+    Página índice con todas las predicciones realizadas.
+    """
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    predictions = get_all_predictions()
+    
+    return render_template('predictions_index.html', predictions=predictions)
+
+
+@app.route('/prediction/<int:prediction_id>')
+def prediction_detail(prediction_id):
+    """
+    Página de detalle de una predicción específica.
+    """
+    prediction = get_prediction_by_id(prediction_id)
+    
+    if not prediction:
+        return render_template('pagina_error.html',
+                             error_title="Predicción no encontrada",
+                             error_message=f"No se encontró la predicción con ID {prediction_id}",
+                             error_code=404), 404
+    
+    return render_template('prediction_detail.html', prediction=prediction)
+
+
+@app.route('/prediction/<int:prediction_id>/delete', methods=['POST'])
+def delete_prediction(prediction_id):
+    """
+    Elimina una predicción de la base de datos.
+    """
+    if 'username' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    success = delete_prediction_by_id(prediction_id)
+    
+    if success:
+        return jsonify({"success": True, "message": "Predicción eliminada correctamente"})
+    else:
+        return jsonify({"success": False, "message": "Error al eliminar la predicción"}), 500
+
+
+def generate_qr_code_with_url(url):
+    """
+    Genera un código QR que enlaza a una URL específica.
     """
     try:
-        # Convertir datos a JSON compacto
-        json_data = json.dumps(data, indent=2)
-        
-        # Crear código QR
+        # Crear código QR con la URL
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=8,
+            box_size=10,
             border=4,
         )
-        qr.add_data(json_data)
+        qr.add_data(url)
         qr.make(fit=True)
         
         # Crear imagen
@@ -354,7 +571,7 @@ def generate_qr_code(data):
         return img_str
     
     except Exception as e:
-        logger.error(f"Error al generar QR: {e}")
+        logger.error(f"Error al generar QR con URL: {e}")
         return None
 
 # =================================================================
@@ -378,7 +595,8 @@ def inject_globals():
 
 if __name__ == '__main__':
     required_templates = ['index.html', 'pagina_error.html', 'login.html', 
-                         'register.html', 'sobre_proyecto.html', 'modelofinal.html']
+                         'register.html', 'sobre_proyecto.html', 'modelofinal.html',
+                         'predictions_index.html', 'prediction_detail.html']
     missing_templates = []
     
     for template in required_templates:

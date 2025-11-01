@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Predicción #{{ prediction.ID }} - PLIX{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <!-- Encabezado con navegación -->
+    <div class="mb-4">
+        <a href="{{ url_for('predictions_index') }}" class="btn btn-outline-secondary mb-3">
+            <i class="fas fa-arrow-left me-2"></i>Volver al Historial
+        </a>
+        
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="display-6 fw-bold" style="color: #004a80;">
+                    <i class="fas fa-file-alt me-2"></i>Detalle de Predicción #{{ prediction.ID }}
+                </h1>
+                <p class="text-muted mb-0">
+                    <i class="fas fa-barcode me-1"></i>Muestra: <strong>{{ prediction.sample_id }}</strong>
+                </p>
+            </div>
+            <div class="text-end">
+                <button onclick="window.print()" class="btn btn-outline-primary mb-2">
+                    <i class="fas fa-print me-2"></i>Imprimir
+                </button>
+                <button onclick="exportToPDF()" class="btn btn-outline-success">
+                    <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        
+        <!-- Columna Izquierda: Metadatos y Parámetros de Entrada -->
+        <div class="col-lg-8">
+            
+            <!-- Metadatos -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información de la Simulación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-calendar-alt fa-2x text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Fecha de Registro</small>
+                                    <strong>{{ prediction.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-user fa-2x text-success me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Usuario</small>
+                                    <strong>{{ prediction.user_name }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-barcode fa-2x text-warning me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">ID de Muestra</small>
+                                    <strong>{{ prediction.sample_id }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-brain fa-2x text-info me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Modelo Utilizado</small>
+                                    <strong>XGBoost TPU Predictor</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parámetros de Entrada -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Parámetros de Entrada</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-dark mb-3">Variables de Proceso de Curación</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td class="fw-medium" style="width: 50%;"><i class="fas fa-flask text-primary me-2"></i>HSP (Hansen Solubility Parameter)</td>
+                                    <td class="text-end"><span class="badge bg-primary">{{ "%.3f"|format(prediction.HSP) }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-medium"><i class="fas fa-clock text-warning me-2"></i>Tiempo de Curación</td>
+                                    <td class="text-end"><span class="badge bg-warning text-dark">{{ "%.2f"|format(prediction.Healing_Time_hrs) }} hrs</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <h6 class="fw-bold text-dark mb-3">Propiedades Originales del Material</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td class="fw-medium" style="width: 50%;"><i class="fas fa-weight-hanging text-danger me-2"></i>Estrés Máximo Original (UTS)</td>
+                                    <td class="text-end"><span class="badge bg-danger">{{ "%.3f"|format(prediction.UTS_Original_MPa) }} MPa</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-medium"><i class="fas fa-expand-arrows-alt text-success me-2"></i>Deformación Original (Strain)</td>
+                                    <td class="text-end"><span class="badge bg-success">{{ "%.1f"|format(prediction.Strain_Original_percent) }} %</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <h6 class="fw-bold text-dark mb-3">Parámetros Adicionales del Material</h6>
+                    <div class="row g-2">
+                        <div class="col-6 col-md-4">
+                            <div class="p-2 bg-light rounded small text-center">
+                                <div class="text-muted mb-1">Peak logM</div>
+                                <strong>{{ "%.2f"|format(prediction.Peak_logM) }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-2 bg-light rounded small text-center">
+                                <div class="text-muted mb-1">Peso Molecular</div>
+                                <strong>{{ "%.0f"|format(prediction.Molecular_Weight) }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-2 bg-light rounded small text-center">
+                                <div class="text-muted mb-1">Ángulo Contacto</div>
+                                <strong>{{ "%.2f"|format(prediction.Contact_Angle_Mean) }}°</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-2 bg-light rounded small text-center">
+                                <div class="text-muted mb-1">Desv. Ángulo</div>
+                                <strong>{{ "%.2f"|format(prediction.Contact_Angle_Std) }}°</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-2 bg-light rounded small text-center">
+                                <div class="text-muted mb-1">FTIR H-Bond</div>
+                                <strong>{{ "%.2f"|format(prediction.FTIR_H_Bond) }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-2 bg-light rounded small text-center">
+                                <div class="text-muted mb-1">DSC Tg</div>
+                                <strong>{{ "%.2f"|format(prediction.DSC_Tg_C) }}°C</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha: Resultados y QR -->
+        <div class="col-lg-4">
+            
+            <!-- Resultados de la Predicción -->
+            <div class="card border-0 shadow-sm mb-4 border-start border-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Resultados</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold text-dark mb-3 text-center">Eficiencias de Curación Predichas</h6>
+                    
+                    <!-- Eficiencia UTS -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-medium">Eficiencia de Estrés</span>
+                            <span class="text-muted small">(HE_UTS)</span>
+                        </div>
+                        <div class="progress" style="height: 30px;">
+                            {% if prediction.HE_UTS_Efficiency_percent >= 90 %}
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ prediction.HE_UTS_Efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.HE_UTS_Efficiency_percent) }}%</strong>
+                            </div>
+                            {% elif prediction.HE_UTS_Efficiency_percent >= 70 %}
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: {{ prediction.HE_UTS_Efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.HE_UTS_Efficiency_percent) }}%</strong>
+                            </div>
+                            {% else %}
+                            <div class="progress-bar bg-danger" role="progressbar" 
+                                 style="width: {{ prediction.HE_UTS_Efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.HE_UTS_Efficiency_percent) }}%</strong>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Eficiencia Elongación -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-medium">Eficiencia de Elongación</span>
+                            <span class="text-muted small">(HE_Strain)</span>
+                        </div>
+                        <div class="progress" style="height: 30px;">
+                            {% if prediction.HE_Elongation_Efficiency_percent >= 90 %}
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ prediction.HE_Elongation_Efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.HE_Elongation_Efficiency_percent) }}%</strong>
+                            </div>
+                            {% elif prediction.HE_Elongation_Efficiency_percent >= 70 %}
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: {{ prediction.HE_Elongation_Efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.HE_Elongation_Efficiency_percent) }}%</strong>
+                            </div>
+                            {% else %}
+                            <div class="progress-bar bg-danger" role="progressbar" 
+                                 style="width: {{ prediction.HE_Elongation_Efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.HE_Elongation_Efficiency_percent) }}%</strong>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>
+                            <strong>Interpretación:</strong><br>
+                            ≥90%: Excelente curación<br>
+                            70-89%: Buena curación<br>
+                            <70%: Curación limitada
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Código QR -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-qrcode me-2"></i>Etiqueta QR</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="p-3 bg-light rounded border mb-3">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ request.url }}" 
+                             alt="Código QR" 
+                             class="img-fluid" 
+                             style="max-width: 250px;">
+                    </div>
+                    <p class="small text-muted mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Escanea este código para acceder directamente a esta predicción
+                    </p>
+                    <div class="d-grid">
+                        <button onclick="downloadQR()" class="btn btn-outline-warning">
+                            <i class="fas fa-download me-2"></i>Descargar QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function downloadQR() {
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data={{ request.url }}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `PLIX_QR_{{ prediction.sample_id }}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function exportToPDF() {
+    window.print();
+}
+</script>
+
+<style>
+@media print {
+    .btn, nav, footer {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+}
+
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+</style>
+
+{% endblock %}

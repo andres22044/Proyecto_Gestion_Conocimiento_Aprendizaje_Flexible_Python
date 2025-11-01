@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrCodeImg = document.getElementById('qr-code-img');
     const qrPlaceholder = document.getElementById('qr-placeholder');
     const downloadQrBtn = document.getElementById('download-qr-btn');
+    const viewDetailBtn = document.getElementById('view-detail-btn');
 
     // --- 2. ACTUALIZACIÓN DE VALORES DE SLIDERS ---
     hspSlider.addEventListener('input', (e) => {
