@@ -104,32 +104,40 @@ def create_prediction_vs_actual_chart(predictor, save_path):
 # =================================================================
 #                         CARGA GLOBAL DEL MODELO
 # =================================================================
+# =================================================================
+#                         CARGA GLOBAL DEL MODELO
+# =================================================================
 print("="*50)
 print("INICIANDO SERVIDOR FLASK...")
-print("Cargando y entrenando el modelo XGBoost...")
-print("Esto puede tardar unos segundos...")
+print("Cargando modelo pre-entrenado...")
 warnings.filterwarnings('ignore', category=UserWarning)
 
+# 1. Crear instancia del predictor
 predictor = XGBoostTPUPropertyPredictor(random_state=42)
 
-try:
-    predictor.load_data(filepath='dataset_ml_final.csv')
-except FileNotFoundError:
-    print("\n" + "!"*50)
-    print("ERROR FATAL: No se encontró 'dataset_ml_final.csv'.")
-    print("Asegúrate de que 'dataset_ml_final.csv' esté en la misma carpeta que 'app.py'.")
-    print("El servidor no puede iniciar sin el modelo.")
-    print("!"*50 + "\n")
+# 2. Cargar el modelo y escalador desde los archivos .joblib
+if not predictor.load_trained_model(
+    model_path='tpu_model.joblib', 
+    scaler_path='tpu_scaler.joblib'
+):
+    print("!"*50)
+    print("ERROR FATAL: No se pudieron cargar los modelos pre-entrenados.")
+    print("Asegúrate de haber ejecutado 'train_and_save.py' localmente.")
+    print("!"*50)
     exit() 
-    
-predictor.train_final_model()
 
-# Evaluar el modelo para tener las métricas disponibles
-print("\nEvaluando modelo...")
-predictor.evaluate_model_loocv()
+# 3. Cargar datos SÓLO para las métricas
+# (Esto es mucho más ligero porque no entrena)
+try:
+    # Este método también configura X_scaled y Y
+    predictor.load_data(filepath='dataset_ml_final.csv')
+    print("\nEvaluando métricas del modelo (LOOCV)...")
+    predictor.evaluate_model_loocv()
+except Exception as e:
+    print(f"Advertencia: No se pudo evaluar el modelo: {e}")
 
 print("="*50)
-print("MODELO ENTRENADO Y LISTO.")
+print("MODELO CARGADO Y LISTO.")
 print("="*50)
 
 # =================================================================

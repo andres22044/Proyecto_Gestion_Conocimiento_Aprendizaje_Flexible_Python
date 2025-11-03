@@ -1,0 +1,10 @@
+Flask
+gunicorn
+mysql-connector-python
+pandas
+numpy
+xgboost
+scikit-learn
+scipy
+matplotlib
+qrcode
