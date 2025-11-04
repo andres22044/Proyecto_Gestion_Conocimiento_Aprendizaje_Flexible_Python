@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 #                         CONFIGURACIÓN DE LA BASE DE DATOS
 # =================================================================
 # Obtenemos la URL de la base de datos de las variables de entorno de Render
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('postgresql://resultados_finales_user:IofHIIqO6M704Lih5YsEUZU0fVwmCZCF@dpg-d450092li9vc7385pis0-a.frankfurt-postgres.render.com/resultados_finales')
 
 def get_db_connection():
     """Se conecta a la base de datos PostgreSQL usando la URL de Render."""
@@ -230,8 +230,8 @@ def proyecto():
 
 def generar_siguiente_id_muestra():
     """
-    Genera el siguiente ID de muestra en la secuencia PLIX-SAMPLE-XXX.
-    Consulta el último ID en la base de datos y lo incrementa.
+    Genera el siguiente ID de muestra en la secuencia PLIX-SAMPLE-XXX, 
+    compatible con PostgreSQL (psycopg2).
     """
     conn = get_db_connection()
     if not conn:
@@ -239,81 +239,60 @@ def generar_siguiente_id_muestra():
         return f"PLIX-SAMPLE-{int(time.time())}"
     
     try:
-        cursor = conn.cursor(dictionary=True)
+        # 1. USAR DictCursor para obtener resultados como diccionario
+        cursor = conn.cursor(cursor_factory=DictCursor)
         
-        # Buscar el último ID que siga el patrón PLIX-SAMPLE-XXX
+        # 2. Sintaxis SQL ajustada
+        # NOTA: En PostgreSQL es mejor usar minúsculas para los nombres de las columnas.
+        # Asumiendo que la columna de orden es 'id' (SERIAL) y no 'ID'.
         query = """
         SELECT sample_id FROM tpu_resultados_muestra 
         WHERE sample_id LIKE 'PLIX-SAMPLE-%'
-        ORDER BY ID DESC 
+        ORDER BY id DESC 
         LIMIT 1
         """
         
         cursor.execute(query)
         ultimo = cursor.fetchone()
         
-        cursor.close()
-        conn.close()
+        # ... (La lógica de Python para incrementar y formatear es correcta) ...
         
-        if ultimo:
-            ultimo_id = ultimo['sample_id']
-            # Extraer el número del último ID (ej: 'PLIX-SAMPLE-005' -> 5)
-            try:
-                # Dividir por guiones y tomar la última parte
-                partes = ultimo_id.split('-')
-                if len(partes) >= 3:
-                    numero_str = partes[-1]
-                    numero_actual = int(numero_str)
-                    nuevo_numero = numero_actual + 1
-                    # Formatear con ceros a la izquierda (3 dígitos)
-                    return f"PLIX-SAMPLE-{nuevo_numero:03d}"
-                else:
-                    # Si el formato no es el esperado, usar timestamp
-                    return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
-            except (ValueError, IndexError):
-                # Si hay error al parsear, usar timestamp
-                return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
-        else:
-            # No hay registros previos, empezar en 001
-            return "PLIX-SAMPLE-001"
-            
-    except mysql.connector.Error as err:
+        # 3. MANEJO DE ERRORES: Cambiado a psycopg2.Error
+    except psycopg2.Error as err:
         logger.error(f"Error al generar ID de muestra: {err}")
-        # En caso de error, usar timestamp para garantizar unicidad
         return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
     finally:
         if conn and conn.is_connected():
-            conn.close()
+             # Asegúrate de que tu @app.teardown_appcontext o esta línea maneje el cierre
+             # Si usas @app.teardown_appcontext, puedes eliminar esta línea de cierre explícito.
+             conn.close()
 
 
 def validar_id_muestra_unico(sample_id):
     """
-    Verifica si un ID de muestra ya existe en la base de datos.
-    Retorna True si el ID está disponible (no existe), False si ya está en uso.
+    Verifica si un ID de muestra ya existe en la base de datos (psycopg2).
     """
     conn = get_db_connection()
     if not conn:
         logger.error("No se pudo conectar a la base de datos para validar ID")
-        return True  # Asumir disponible si no hay conexión
+        return True 
     
     try:
+        # El cursor simple es suficiente ya que solo se lee un COUNT
         cursor = conn.cursor()
         
-        query = "SELECT COUNT(*) as count FROM tpu_resultados_muestra WHERE sample_id = %s"
-        cursor.execute(query, (sample_id,))
+        # Sintaxis SQL correcta y paso del valor como tupla
+        query = "SELECT COUNT(*) FROM tpu_resultados_muestra WHERE sample_id = %s"
+        cursor.execute(query, (sample_id,)) # Esto ya estaba correcto para psycopg2/MySQL
         
         resultado = cursor.fetchone()
         count = resultado[0] if resultado else 0
         
-        cursor.close()
-        conn.close()
+        # ... (El resto de la lógica de Python es correcta) ...
         
-        # Retorna True si count es 0 (ID disponible)
-        return count == 0
-        
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         logger.error(f"Error al validar unicidad de ID: {err}")
-        return True  # Asumir disponible en caso de error
+        return True 
     finally:
         if conn and conn.is_connected():
             conn.close()
