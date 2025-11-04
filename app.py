@@ -33,8 +33,7 @@ logger = logging.getLogger(__name__)
 #                         CONFIGURACIÓN DE LA BASE DE DATOS
 # =================================================================
 # Obtenemos la URL de la base de datos de las variables de entorno de Render
-DATABASE_URL = os.environ.get('postgresql://resultados_finales_user:IofHIIqO6M704Lih5YsEUZU0fVwmCZCF@dpg-d450092li9vc7385pis0-a.frankfurt-postgres.render.com/resultados_finales')
-
+DATABASE_URL = 'postgresql://resultados_finales_user:IofHIIqO6M704Lih5YsEUZU0fVwmCZCF@dpg-d450092li9vc7385pis0-a.frankfurt-postgres.render.com/resultados_finales'
 def get_db_connection():
     """Se conecta a la base de datos PostgreSQL usando la URL de Render."""
     try:
@@ -240,7 +239,7 @@ def generar_siguiente_id_muestra():
     
     try:
         # 1. USAR DictCursor para obtener resultados como diccionario
-        cursor = conn.cursor(cursor_factory=DictCursor)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
         # 2. Sintaxis SQL ajustada
         # NOTA: En PostgreSQL es mejor usar minúsculas para los nombres de las columnas.
@@ -262,7 +261,7 @@ def generar_siguiente_id_muestra():
         logger.error(f"Error al generar ID de muestra: {err}")
         return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
     finally:
-        if conn and conn.is_connected():
+        if conn and not conn.closed:
              # Asegúrate de que tu @app.teardown_appcontext o esta línea maneje el cierre
              # Si usas @app.teardown_appcontext, puedes eliminar esta línea de cierre explícito.
              conn.close()
@@ -294,7 +293,7 @@ def validar_id_muestra_unico(sample_id):
         logger.error(f"Error al validar unicidad de ID: {err}")
         return True 
     finally:
-        if conn and conn.is_connected():
+        if conn and not conn.closed:
             conn.close()
 
 
@@ -400,7 +399,7 @@ def get_all_predictions():
         logger.error(f"Error al obtener predicciones: {err}")
         return []
     finally:
-        if conn and conn.is_connected():
+        if conn and not conn.closed:
             conn.close()
 
 
@@ -433,7 +432,7 @@ def get_prediction_by_id(prediction_id):
         logger.error(f"Error al obtener predicción {prediction_id}: {err}")
         return None
     finally:
-        if conn and conn.is_connected():
+        if conn and not conn.closed:
             conn.close()
 
 
@@ -469,7 +468,7 @@ def delete_prediction_by_id(prediction_id):
             conn.rollback()
         return False
     finally:
-        if conn and conn.is_connected():
+        if conn and not conn.closed:
             conn.close()
 
 
