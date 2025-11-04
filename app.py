@@ -223,6 +223,97 @@ def proyecto():
 #                  FUNCIONES DE BASE DE DATOS PARA PREDICCIONES
 # =================================================================
 
+def generar_siguiente_id_muestra():
+    """
+    Genera el siguiente ID de muestra en la secuencia PLIX-SAMPLE-XXX.
+    Consulta el último ID en la base de datos y lo incrementa.
+    """
+    conn = get_db_connection()
+    if not conn:
+        # Si no hay conexión, generar un ID basado en timestamp
+        return f"PLIX-SAMPLE-{int(time.time())}"
+    
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Buscar el último ID que siga el patrón PLIX-SAMPLE-XXX
+        query = """
+        SELECT sample_id FROM tpu_resultados_muestra 
+        WHERE sample_id LIKE 'PLIX-SAMPLE-%'
+        ORDER BY ID DESC 
+        LIMIT 1
+        """
+        
+        cursor.execute(query)
+        ultimo = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if ultimo:
+            ultimo_id = ultimo['sample_id']
+            # Extraer el número del último ID (ej: 'PLIX-SAMPLE-005' -> 5)
+            try:
+                # Dividir por guiones y tomar la última parte
+                partes = ultimo_id.split('-')
+                if len(partes) >= 3:
+                    numero_str = partes[-1]
+                    numero_actual = int(numero_str)
+                    nuevo_numero = numero_actual + 1
+                    # Formatear con ceros a la izquierda (3 dígitos)
+                    return f"PLIX-SAMPLE-{nuevo_numero:03d}"
+                else:
+                    # Si el formato no es el esperado, usar timestamp
+                    return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
+            except (ValueError, IndexError):
+                # Si hay error al parsear, usar timestamp
+                return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
+        else:
+            # No hay registros previos, empezar en 001
+            return "PLIX-SAMPLE-001"
+            
+    except mysql.connector.Error as err:
+        logger.error(f"Error al generar ID de muestra: {err}")
+        # En caso de error, usar timestamp para garantizar unicidad
+        return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+
+def validar_id_muestra_unico(sample_id):
+    """
+    Verifica si un ID de muestra ya existe en la base de datos.
+    Retorna True si el ID está disponible (no existe), False si ya está en uso.
+    """
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo conectar a la base de datos para validar ID")
+        return True  # Asumir disponible si no hay conexión
+    
+    try:
+        cursor = conn.cursor()
+        
+        query = "SELECT COUNT(*) as count FROM tpu_resultados_muestra WHERE sample_id = %s"
+        cursor.execute(query, (sample_id,))
+        
+        resultado = cursor.fetchone()
+        count = resultado[0] if resultado else 0
+        
+        cursor.close()
+        conn.close()
+        
+        # Retorna True si count es 0 (ID disponible)
+        return count == 0
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error al validar unicidad de ID: {err}")
+        return True  # Asumir disponible en caso de error
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+
 def save_prediction_to_db(sample_id, username, input_data, prediction_results):
     """
     Guarda una predicción en la base de datos.
@@ -417,11 +508,16 @@ def modelo_final():
         'mae_elongation': round(metrics['MAE'][0], 2) if metrics else 0.00
     }
     
+    # Generar el siguiente ID de muestra disponible
+    siguiente_id = generar_siguiente_id_muestra()
+    
     # Generar gráfico de validación
     chart_path = os.path.join(app.static_folder, 'model_validation_chart.png')
     create_prediction_vs_actual_chart(predictor, chart_path)
     
-    return render_template('modelofinal.html', model_info=model_info)
+    return render_template('modelofinal.html', 
+                          model_info=model_info, 
+                          siguiente_id=siguiente_id)
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -449,19 +545,36 @@ def predict():
             'dsc_tg': float(data['dsc'])
         }
 
-        # 2. Obtener la predicción
+        # 2. Obtener y validar el ID de muestra
+        sample_id = data.get('sampleId', '').strip()
+        
+        # Si el ID está vacío, generar uno automáticamente
+        if not sample_id:
+            sample_id = generar_siguiente_id_muestra()
+            logger.info(f"ID de muestra vacío. Generado automáticamente: {sample_id}")
+        
+        # VALIDACIÓN ESTRICTA: Verificar unicidad del ID
+        if not validar_id_muestra_unico(sample_id):
+            error_msg = f"El ID de muestra '{sample_id}' ya existe en la base de datos. Por favor, use un ID diferente."
+            logger.warning(f"Intento de guardar con ID duplicado: {sample_id}")
+            return jsonify({
+                "error": error_msg,
+                "error_code": "DUPLICATE_ID",
+                "suggested_id": generar_siguiente_id_muestra()
+            }), 400
+
+        # 3. Obtener la predicción
         prediction_results = predictor.predict(**input_data)
         
         if prediction_results is None:
             return jsonify({"error": "Error al realizar la predicción"}), 500
         
-        # 3. Convertir numpy.float32 a float de Python
+        # 4. Convertir numpy.float32 a float de Python
         prediction_results_clean = {
             key: float(value) for key, value in prediction_results.items()
         }
         
-        # 4. Guardar en la base de datos
-        sample_id = data.get('sampleId', f'PLIX-AUTO-{int(time.time())}')
+        # 5. Guardar en la base de datos
         prediction_id = save_prediction_to_db(
             sample_id=sample_id,
             username=session['username'],
@@ -470,23 +583,26 @@ def predict():
         )
         
         if prediction_id is None:
-            logger.warning("No se pudo guardar la predicción en la BD, pero se continúa")
+            return jsonify({
+                "error": "Error al guardar la predicción en la base de datos",
+                "error_code": "DB_SAVE_ERROR"
+            }), 500
         
-        # 5. Generar URL de detalle para el QR
-        if prediction_id:
-            detail_url = url_for('prediction_detail', prediction_id=prediction_id, _external=True)
-        else:
-            detail_url = url_for('predictions_index', _external=True)
+        # 6. Generar URL de detalle para el QR
+        detail_url = url_for('prediction_detail', prediction_id=prediction_id, _external=True)
         
-        # 6. Generar código QR con la URL
+        # 7. Generar código QR con la URL
         qr_image_base64 = generate_qr_code_with_url(detail_url)
         
-        # 7. Añadir el QR y el ID a los resultados
+        # 8. Añadir el QR y el ID a los resultados
         prediction_results_clean['qr_code'] = qr_image_base64
         prediction_results_clean['prediction_id'] = prediction_id
         prediction_results_clean['detail_url'] = detail_url
+        prediction_results_clean['sample_id'] = sample_id
         
-        # 8. Devolver todo como JSON
+        logger.info(f"Predicción guardada exitosamente. ID: {prediction_id}, Muestra: {sample_id}")
+        
+        # 9. Devolver todo como JSON
         return jsonify(prediction_results_clean)
 
     except ValueError as ve:
@@ -543,6 +659,57 @@ def delete_prediction(prediction_id):
         return jsonify({"success": True, "message": "Predicción eliminada correctamente"})
     else:
         return jsonify({"success": False, "message": "Error al eliminar la predicción"}), 500
+
+
+@app.route('/api/validar-id-muestra', methods=['POST'])
+def api_validar_id_muestra():
+    """
+    API para validar en tiempo real si un ID de muestra está disponible.
+    """
+    if 'username' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    data = request.json
+    sample_id = data.get('sample_id', '').strip()
+    
+    if not sample_id:
+        return jsonify({
+            "valid": False,
+            "message": "El ID de muestra no puede estar vacío",
+            "available": False
+        })
+    
+    # Validar unicidad
+    is_available = validar_id_muestra_unico(sample_id)
+    
+    if is_available:
+        return jsonify({
+            "valid": True,
+            "available": True,
+            "message": "ID disponible"
+        })
+    else:
+        return jsonify({
+            "valid": False,
+            "available": False,
+            "message": f"El ID '{sample_id}' ya está en uso",
+            "suggested_id": generar_siguiente_id_muestra()
+        })
+
+
+@app.route('/api/generar-siguiente-id', methods=['GET'])
+def api_generar_siguiente_id():
+    """
+    API para generar el siguiente ID de muestra disponible.
+    """
+    if 'username' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    siguiente_id = generar_siguiente_id_muestra()
+    
+    return jsonify({
+        "siguiente_id": siguiente_id
+    })
 
 
 def generate_qr_code_with_url(url):
