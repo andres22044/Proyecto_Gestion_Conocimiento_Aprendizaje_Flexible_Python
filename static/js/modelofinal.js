@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('prediction-form');
     if (!form) return; // Si no estamos en la página del modelo, no hacer nada
 
+    const sampleIdInput = document.getElementById('sampleId');
+    const idValidationMessage = document.getElementById('id-validation-message');
+    
     const hspSlider = document.getElementById('hsp');
     const hspValue = document.getElementById('hsp-value');
     const healingTimeSlider = document.getElementById('healingTime');
@@ -35,6 +38,33 @@ document.addEventListener('DOMContentLoaded', () => {
     healingTimeSlider.addEventListener('input', (e) => {
         healingTimeValue.textContent = `${parseFloat(e.target.value).toFixed(1)} h`;
     });
+
+    // --- 2.5. VALIDACIÓN EN TIEMPO REAL DEL ID DE MUESTRA ---
+    let validationTimeout = null;
+    sampleIdInput.addEventListener('input', function() {
+        clearTimeout(validationTimeout);
+        
+        const sampleId = this.value.trim();
+        
+        if (!sampleId) {
+            idValidationMessage.innerHTML = '<i class="fas fa-exclamation-circle text-warning me-1"></i>El ID no puede estar vacío';
+            idValidationMessage.className = 'text-warning';
+            return;
+        }
+        
+        idValidationMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Validando...';
+        idValidationMessage.className = 'text-muted';
+        
+        // Esperar 500ms después de que el usuario deje de escribir
+        validationTimeout = setTimeout(async () => {
+            await validarIdMuestra(sampleId);
+        }, 500);
+    });
+
+    // Validar el ID inicial al cargar la página
+    if (sampleIdInput.value.trim()) {
+        validarIdMuestra(sampleIdInput.value.trim());
+    }
 
     // --- 3. MANEJO DEL ENVÍO DEL FORMULARIO ---
     form.addEventListener('submit', async (e) => {
@@ -81,7 +111,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
 
             const predictions = await response.json();
-            if (predictions.error) throw new Error(predictions.error);
+            if (predictions.error) {
+                // Manejar error de ID duplicado específicamente
+                if (predictions.error_code === 'DUPLICATE_ID') {
+                    const useSuggested = confirm(
+                        `${predictions.error}\n\n` +
+                        `¿Deseas usar el ID sugerido: ${predictions.suggested_id}?`
+                    );
+                    
+                    if (useSuggested) {
+                        sampleIdInput.value = predictions.suggested_id;
+                        await validarIdMuestra(predictions.suggested_id);
+                        return; // No mostrar más errores
+                    }
+                }
+                throw new Error(predictions.error);
+            }
 
             updateUI(predictions);
 
@@ -112,6 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.classList.remove('visually-hidden'); 
         resultsPlaceholder.classList.add('d-none');
         
+        // Actualizar el input con el ID guardado (por si se autogeneró)
+        if (predictions.sample_id) {
+            sampleIdInput.value = predictions.sample_id;
+        }
+        
         // 1. Actualizar eficiencias predichas
         const utsEfficiency = predictions.HE_UTS_Mean;
         const elongationEfficiency = predictions.HE_Elongation_Mean;
@@ -130,16 +180,30 @@ document.addEventListener('DOMContentLoaded', () => {
             qrPlaceholder.classList.add('d-none');
             downloadQrBtn.classList.remove('d-none');
             
+            // Mostrar botón de ver detalle si hay URL
+            if (predictions.detail_url) {
+                viewDetailBtn.href = predictions.detail_url;
+                viewDetailBtn.classList.remove('d-none');
+            }
+            
             // Guardar el QR globalmente para descarga
             window.currentQRCode = predictions.qr_code;
         } else {
             qrCodeImg.classList.add('d-none');
             qrPlaceholder.classList.remove('d-none');
             downloadQrBtn.classList.add('d-none');
+            viewDetailBtn.classList.add('d-none');
         }
         
         // 3. Scroll suave a resultados
         resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // 4. Mostrar notificación de éxito
+        if (predictions.prediction_id) {
+            showSuccessNotification(
+                `Predicción guardada exitosamente con ID #${predictions.prediction_id}`
+            );
+        }
     }
     
     // --- 6. FUNCIÓN AUXILIAR PARA COLORES DE EFICIENCIA ---
@@ -160,6 +224,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+/**
+ * Muestra una notificación temporal de éxito en la esquina superior derecha de la pantalla.
+ * @param {string} message - El mensaje a mostrar en la notificación.
+ */
+function showSuccessNotification(message) {
+    // 1. Crear el elemento de notificación (div)
+    const notification = document.createElement('div');
+    notification.id = 'success-notification';
+    notification.textContent = message;
+
+    // 2. Aplicar estilos básicos para que sea visible
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background-color: #4CAF50; /* Verde de éxito */
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000; /* Asegura que esté por encima de otros elementos */
+        opacity: 0;
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateY(-20px);
+        font-family: Arial, sans-serif;
+    `;
+
+    // 3. Agregar la notificación al cuerpo del documento
+    document.body.appendChild(notification);
+
+    // 4. Mostrar la notificación (transición de entrada)
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 10); // Pequeño retraso para asegurar que la transición funcione
+
+    // 5. Ocultar y eliminar la notificación después de 4 segundos
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
+        
+        // Esperar a que termine la transición para eliminar el elemento
+        notification.addEventListener('transitionend', () => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        });
+
+    }, 4000); // 4000 milisegundos (4 segundos)
+}
+
 // --- 7. FUNCIÓN GLOBAL PARA DESCARGAR QR ---
 function downloadQR() {
     if (!window.currentQRCode) {
@@ -174,4 +289,48 @@ function downloadQR() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// --- 8. FUNCIÓN PARA VALIDAR ID DE MUESTRA ---
+async function validarIdMuestra(sampleId) {
+    try {
+        const response = await fetch('/api/validar-id-muestra', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sample_id: sampleId })
+        });
+        
+        const result = await response.json();
+        
+        const idValidationMessage = document.getElementById('id-validation-message');
+        
+        if (result.available) {
+            idValidationMessage.innerHTML = '<i class="fas fa-check-circle text-success me-1"></i>ID disponible';
+            idValidationMessage.className = 'text-success';
+        } else {
+            idValidationMessage.innerHTML = `<i class="fas fa-times-circle text-danger me-1"></i>${result.message}`;
+            idValidationMessage.className = 'text-danger';
+        }
+    } catch (error) {
+        console.error('Error al validar ID:', error);
+        const idValidationMessage = document.getElementById('id-validation-message');
+        idValidationMessage.innerHTML = '<i class="fas fa-exclamation-triangle text-warning me-1"></i>Error al validar';
+        idValidationMessage.className = 'text-warning';
+    }
+}
+
+// --- 9. FUNCIÓN PARA GENERAR NUEVO ID ---
+async function generarNuevoId() {
+    try {
+        const response = await fetch('/api/generar-siguiente-id');
+        const result = await response.json();
+        
+        if (result.siguiente_id) {
+            document.getElementById('sampleId').value = result.siguiente_id;
+            await validarIdMuestra(result.siguiente_id);
+        }
+    } catch (error) {
+        console.error('Error al generar nuevo ID:', error);
+        alert('Error al generar nuevo ID');
+    }
 }

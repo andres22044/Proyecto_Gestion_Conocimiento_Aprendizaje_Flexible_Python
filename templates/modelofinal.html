@@ -28,9 +28,18 @@
                         <!-- ID de Muestra (Opcional) -->
                         <div class="mb-4">
                             <label for="sampleId" class="form-label fw-semibold text-muted">
-                                <i class="fas fa-barcode me-1"></i>ID de Muestra (Opcional)
+                                <i class="fas fa-barcode me-1"></i>ID de Muestra
                             </label>
-                            <input type="text" id="sampleId" class="form-control" placeholder="Ej: PLIX-001" value="PLIX-SAMPLE-001">
+                            <div class="input-group">
+                                <input type="text" id="sampleId" class="form-control" placeholder="Ej: PLIX-SAMPLE-001" value="{{ siguiente_id }}" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="generarNuevoId()" title="Generar nuevo ID">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                <span id="id-validation-message"></span>
+                            </small>
+                            <small class="text-muted">El ID debe ser único. Se genera automáticamente pero puedes cambiarlo.</small>
                         </div>
 
                         <hr class="my-4">
@@ -70,7 +79,7 @@
                             <label for="utsOriginal" class="form-label fw-medium">
                                 Estrés Máximo Original (UTS Original) [MPa]
                             </label>
-                            <input type="number" id="utsOriginal" class="form-control" step="0.01" value="0.3675" min="0.14" max="0.63" required>
+                            <input type="number" id="utsOriginal" class="form-control" step="any" value="0.3675" min="0.14" max="0.63" required>
                             <small class="text-muted">Rango válido: 0.14 - 0.63 MPa (del dataset de entrenamiento)</small>
                         </div>
 
@@ -79,7 +88,7 @@
                             <label for="strainOriginal" class="form-label fw-medium">
                                 Deformación Original (Strain Original) [%]
                             </label>
-                            <input type="number" id="strainOriginal" class="form-control" step="0.1" value="973.92" min="116.37" max="1799.37" required>
+                            <input type="number" id="strainOriginal" class="form-control" step="any" value="973.92" min="116.37" max="1799.37" required>
                             <small class="text-muted">Rango válido: 116.37 - 1799.37 % (del dataset de entrenamiento)</small>
                         </div>
 
@@ -90,27 +99,27 @@
                         <div class="row g-2">
                             <div class="col-6">
                                 <label class="form-label small">Peak logM</label>
-                                <input type="number" id="peakLogM" value="4.53" min="4.43" max="4.53" step="0.01" class="form-control form-control-sm" title="Peak logM (4.43-4.53)">
+                                <input type="number" id="peakLogM" value="4.53" min="4.43" max="4.53" step="any" class="form-control form-control-sm" title="Peak logM (4.43-4.53)">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small">Peso Molecular</label>
-                                <input type="number" id="molecularWeight" value="33884" min="26915" max="33884" step="1" class="form-control form-control-sm" title="Peso Molecular (26915-33884)">
+                                <input type="number" id="molecularWeight" value="33884" min="26915" max="33884" step="any" class="form-control form-control-sm" title="Peso Molecular (26915-33884)">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small">Ángulo Contacto (°)</label>
-                                <input type="number" id="contactAngleMean" value="73.61" min="70.62" max="76.00" step="0.01" class="form-control form-control-sm" title="Ángulo Contacto (70.62-76.00)">
+                                <input type="number" id="contactAngleMean" value="73.61" min="70.62" max="76.00" step="any" class="form-control form-control-sm" title="Ángulo Contacto (70.62-76.00)">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small">Desv. Ángulo (°)</label>
-                                <input type="number" id="contactAngleStd" value="40.91" min="39.14" max="42.12" step="0.01" class="form-control form-control-sm" title="Desv. Estándar (39.14-42.12)">
+                                <input type="number" id="contactAngleStd" value="40.91" min="39.14" max="42.12" step="any" class="form-control form-control-sm" title="Desv. Estándar (39.14-42.12)">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small">FTIR H-Bond</label>
-                                <input type="number" id="ftir" value="142.33" min="93.57" max="197.06" step="0.01" class="form-control form-control-sm" title="FTIR H-Bond (93.57-197.06)">
+                                <input type="number" id="ftir" value="142.33" min="93.57" max="197.06" step="any" class="form-control form-control-sm" title="FTIR H-Bond (93.57-197.06)">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small">DSC Tg (°C)</label>
-                                <input type="number" id="dsc" value="-89.86" min="-89.96" max="-89.82" step="0.01" class="form-control form-control-sm" title="DSC Tg (-89.96 a -89.82)">
+                                <input type="number" id="dsc" value="-89.86" min="-89.96" max="-89.82" step="any" class="form-control form-control-sm" title="DSC Tg (-89.96 a -89.82)">
                             </div>
                         </div>
 
