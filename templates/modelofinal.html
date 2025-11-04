@@ -242,8 +242,11 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Sección 3: Análisis Gráfico -->
+        </div>
+    </div>
+    <!-- Sección 3: Validación del Modelo (Movida a fila completa) -->
+    <div class="row g-4 mt-0"> <!-- mt-0 porque la fila anterior ya tiene g-4 que da espacio -->
+        <div class="col-12">
             <div class="card shadow-sm" style="border-left: 4px solid #ffc107;">
                 <div class="card-header bg-warning text-dark">
                     <h3 class="h5 mb-0"><i class="fas fa-chart-scatter me-2"></i>3. Validación del Modelo</h3>
@@ -261,6 +264,178 @@
                         Los puntos cercanos a la línea diagonal roja indican predicciones precisas. 
                         El R² Score superior a 0.90 confirma la alta confiabilidad del modelo.
                     </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- *** FIN DE LA MODIFICACIÓN *** -->
+
+
+    <!-- *** NUEVA SECCIÓN *** -->
+    <!-- Sección 4: Información del Modelo y Dataset -->
+    <div class="row g-4 mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm" style="border-left: 4px solid #6c757d;">
+                <div class="card-header bg-secondary text-white">
+                    <h3 class="h5 mb-0"><i class="fas fa-book-reader me-2"></i>4. Sobre el Modelo y los Datos</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="accordion" id="accordionInfo">
+
+                        <!-- Item 1: Información del Modelo -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="fas fa-brain me-2 text-primary"></i>Información del Modelo de Predicción (XGBoost)
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionInfo">
+                                <div class="accordion-body small">
+                                    <p>Esta herramienta utiliza una técnica de vanguardia para asegurar la precisión de los resultados.</p>
+                                    
+                                    <strong>Tipo de Modelo: XGBoost (Extreme Gradient Boosting)</strong>
+                                    <p>Es un algoritmo de Machine Learning basado en árboles de decisión, reconocido por su alta precisión y eficiencia en problemas de regresión. El modelo predice la <strong>Eficiencia de Curación (%)</strong> de un Poliuretano Termoplástico (TPU) biobasado.</p>
+                                    
+                                    <strong>Métricas de Rendimiento (Validación)</strong>
+                                    <p>Las métricas indican la calidad con la que fue entrenado el modelo:</p>
+                                    <ul>
+                                        <li><strong>R² Score (Coeficiente de Determinación): ≈ 0.92</strong>
+                                            <br><em>Interpretación: El modelo explica más del 90% de la variación en la eficiencia de curación, lo que indica un excelente ajuste.</em>
+                                        </li>
+                                        <li><strong>MAE (Error Absoluto Medio): ≈ 3.5%</strong>
+                                            <br><em>Interpretación: En promedio, la predicción del modelo está a solo ~3.5% de la eficiencia real observada.</em>
+                                        </li>
+                                    </ul>
+                                    
+                                    <strong>Variables de Entrada (Features)</strong>
+                                    <p>El modelo utiliza variables clave para hacer la predicción, incluyendo el Parámetro de Solubilidad de Hansen (HSP), el Tiempo de Curación, y las propiedades mecánicas originales del material (UTS y Strain).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2: Información del Dataset -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <i class="fas fa-database me-2 text-success"></i>Información del Conjunto de Datos (Dataset)
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionInfo">
+                                <div class="accordion-body small">
+                                    <p>El modelo fue entrenado con datos experimentales de un estudio sobre un Poliuretano Termoplástico (TPU) biobasado con triple acción de autocuración.</p>
+                                    
+                                    <strong>Origen Científico:</strong>
+                                    <ul>
+                                        <li><strong>Publicación:</strong> "A Bio-based Thermoplastic Polyurethane with Triple Self-healing Actions for Wearable Technology and Smart Textiles"</li>
+                                        <li><strong>Revista:</strong> Materials Advances</li>
+                                        <li><strong>Autores:</strong> Thomas Griggs, Jubair Ahmed, Hamta Majd, Mohan Edirisinghe, Biqiong Chen</li>
+                                        <li><strong>Institución:</strong> Queen's University Belfast</li>
+                                        <li><strong>DOI del Dataset:</strong> <a href="https://doi.org/10.1039/d4ma00289j" target="_blank">10.1039/d4ma00289j</a></li>
+                                    </ul>
+                                    
+                                    <strong>Metodología de los Datos (Contexto Experimental):</strong>
+                                    <ul>
+                                        <li><strong>Recopilación:</strong> Los datos fueron recopilados entre el 2020-06-01 y el 2023-06-01 en Belfast, Antrim, Reino Unido.</li>
+                                        <li><strong>Pruebas de Autocuración (Self-healing):</strong> La eficiencia se cuantificó a través de un proceso de corte y curación (cut-heal). Las muestras se cortaron completamente, se volvieron a unir a mano brevemente, y se dejaron curar sin fuerza.</li>
+                                        <li><strong>Medición:</strong> La recuperación se evaluó mediante ensayos de tracción uniaxial (tensile testing) a temperatura ambiente.</li>
+                                    </ul>
+                                Todos los datos utilizados provienen de la publicación y el dataset citado.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3: descripcion de propiedades -->
+                         <div class="accordion" id="accordionVariables">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                                        <i class="bi bi-sliders me-2"></i> <strong>1. Variables de Simulación (Inputs)</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordionVariables">
+                                    <div class="accordion-body">
+                                        <p>Estas son las condiciones que puedes modificar para predecir el rendimiento del material.</p>
+                                        
+                                        <dl class="row">
+                                            <dt class="col-sm-3">HSP (Receta)</dt>
+                                            <dd class="col-sm-9">
+                                                <p><strong>Qué es:</strong> El "ADN" de la formulación química (P35, P40, P45).</p>
+                                                <p><strong>Impacto (Marketing):</strong> Es el ingrediente principal. Cambiarlo afecta la dureza, elasticidad y, lo más importante, la capacidad de autocuración.</p>
+                                            </dd>
+
+                                            <dt class="col-sm-3">Healing_Time (Tiempo)</dt>
+                                            <dd class="col-sm-9">
+                                                <p><strong>Qué es:</strong> El tiempo (en horas) que se deja "descansar" el material para que sane después de un corte.</p>
+                                                <p><strong>Impacto (Marketing):</strong> Un material superior se cura más rápido. Esta variable te permite simular y encontrar el punto ópto de recuperación vs. tiempo.</p>
+                                            </dd>
+                                        </dl>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingTwo">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                        <i class="bi bi-magic me-2"></i> <strong>2. Propiedades Químicas (El "Por Qué" del Modelo)</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionVariables">
+                                    <div class="accordion-body">
+                                        <p>Estas son las propiedades internas que el modelo usa para entender cómo funciona el material.</p>
+
+                                        <dl class="row">
+                                            <dt class="col-sm-3">Molecular_Weight (Peso)</dt>
+                                            <dd class="col-sm-9">
+                                                <p><strong>Qué es:</strong> Mide el tamaño (longitud) de las cadenas moleculares.</p>
+                                                <p><strong>Analogía (Marketing):</strong> Piénsalo como espagueti. Cadenas largas (alto peso) se enredan más y hacen el material más <strong>fuerte y resistente</strong>.</p>
+                                            </dd>
+
+                                            <dt class="col-sm-3">FTIR_H-Bond_Value</dt>
+                                            <dd class="col-sm-9">
+                                                <p><strong>Qué es:</strong> Mide los "Enlaces de Hidrógeno".</p>
+                                                <p><strong>Analogía (Marketing):</strong> Es el <strong>"pegamento mágico"</strong> de la autocuración. Son como pequeños imanes moleculares que se sueltan al cortar y se vuelven a pegar al juntarse. <strong>Es la clave de la autocuración.</strong></p>
+                                            </dd>
+
+                                            <dt class="col-sm-3">DSC_Tg_Value (Flexibilidad)</dt>
+                                            <dd class="col-sm-9">
+                                                <p><strong>Qué es:</strong> La "Temperatura de Ablandamiento" (Transición Vítrea).</p>
+                                                <p><strong>Impacto (Marketing):</strong> Una $\text{T}_g$ muy baja (ej. $-40^\circ\text{C}$) es excelente para ropa inteligente, ya que garantiza que el material <strong>seguirá siendo flexible incluso en climas fríos</strong>.</p>
+                                            </dd>
+
+                                            <dt class="col-sm-3">Contact_Angle_Mean</dt>
+                                            <dd class="col-sm-9">
+                                                <p><strong>Qué es:</strong> Mide el ángulo de una gota de agua en la superficie.</p>
+                                                <p><strong>Impacto (Marketing):</strong> Mide qué tan <strong>"impermeable"</strong> es el material. Un ángulo alto es ideal para repeler sudor o lluvia en tecnología *wearable*.</p>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingThree">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                        <i class="bi bi-rulers me-2"></i> <strong>3. Rendimiento Base (Referencia del 100%)</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionVariables">
+                                    <div class="accordion-body">
+                                        <p>Estos son los valores del material "de fábrica" (sin daños). El modelo los usa como el punto de referencia del $100\%$ para calcular la eficiencia de la curación.</p>
+                                        
+                                        <dl class="row">
+                                            <dt class="col-sm-3">UTS_Original_Mean</dt>
+                                            <dd class="col-sm-9"><strong>Fuerza Original ($100\%$):</strong> La dureza máxima que soporta el material cuando está nuevo.</dd>
+
+                                            <dt class="col-sm-3">Strain_Original_Mean</dt>
+                                            <dd class="col-sm-9"><strong>Elasticidad Original ($100\%$):</strong> Cuánto se puede estirar el material cuando está nuevo.</dd>
+                                        </dl>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

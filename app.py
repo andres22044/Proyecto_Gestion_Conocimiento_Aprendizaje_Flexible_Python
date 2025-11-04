@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 #                         CONFIGURACIÓN DE LA BASE DE DATOS
 # =================================================================
 # Obtenemos la URL de la base de datos de las variables de entorno de Render
-DATABASE_URL = 'postgresql://resultados_finales_user:IofHIIqO6M704Lih5YsEUZU0fVwmCZCF@dpg-d450092li9vc7385pis0-a.frankfurt-postgres.render.com/resultados_finales'
+DATABASE_URL = os.environ.get('DATABASE_URL')
 def get_db_connection():
     """Se conecta a la base de datos PostgreSQL usando la URL de Render."""
     try:
@@ -180,6 +180,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        email = request.form['email']   
         hashed_password = generate_password_hash(password)
         
         conn = get_db_connection()
@@ -188,8 +189,8 @@ def register():
             
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", 
-                         (username, hashed_password))
+            cursor.execute("INSERT INTO users (username, password_hash, email) VALUES (%s, %s, %s)", 
+                         (username, hashed_password, email))
             conn.commit()
             logger.info(f"Nuevo usuario registrado: {username}")
         except psycopg2.Error as err:
@@ -251,6 +252,28 @@ def generar_siguiente_id_muestra():
         
         cursor.execute(query)
         ultimo = cursor.fetchone()
+
+        if ultimo:
+            ultimo_id = ultimo['sample_id']
+            # Extraer el número del último ID (ej: 'PLIX-SAMPLE-005' -> 5)
+            try:
+                # Dividir por guiones y tomar la última parte
+                partes = ultimo_id.split('-')
+                if len(partes) >= 3:
+                    numero_str = partes[-1]
+                    numero_actual = int(numero_str)
+                    nuevo_numero = numero_actual + 1
+                    # Formatear con ceros a la izquierda (3 dígitos)
+                    return f"PLIX-SAMPLE-{nuevo_numero:03d}"
+                else:
+                    # Si el formato no es el esperado, usar timestamp
+                    return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
+            except (ValueError, IndexError):
+                # Si hay error al parsear, usar timestamp
+                return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
+        else:
+            # No hay registros previos, empezar en 001
+            return "PLIX-SAMPLE-001"
         
         # ... (La lógica de Python para incrementar y formatear es correcta) ...
         
@@ -276,7 +299,7 @@ def validar_id_muestra_unico(sample_id):
     
     try:
         # El cursor simple es suficiente ya que solo se lee un COUNT
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=DictCursor)
         
         # Sintaxis SQL correcta y paso del valor como tupla
         query = "SELECT COUNT(*) FROM tpu_resultados_muestra WHERE sample_id = %s"
@@ -285,7 +308,11 @@ def validar_id_muestra_unico(sample_id):
         resultado = cursor.fetchone()
         count = resultado[0] if resultado else 0
         
-        # ... (El resto de la lógica de Python es correcta) ...
+        cursor.close()
+        conn.close()
+        
+        # Retorna True si count es 0 (ID disponible)
+        return count == 0
         
     except psycopg2.Error as err:
         logger.error(f"Error al validar unicidad de ID: {err}")
