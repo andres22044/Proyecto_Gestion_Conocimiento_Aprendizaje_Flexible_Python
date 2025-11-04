@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from xgboost import XGBRegressor
+import joblib
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.model_selection import LeaveOneOut, RandomizedSearchCV, KFold
 from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
@@ -74,6 +75,23 @@ class XGBoostTPUPropertyPredictor:
         for i, targ in enumerate(self.target_names, 1):
             print(f"  {i}. {targ}")
         print("="*70)
+
+
+    def load_trained_model(self, model_path='tpu_model.joblib', scaler_path='tpu_scaler.joblib'):
+        """
+        Carga un modelo y escalador pre-entrenados desde archivos.
+        """
+        print(f"\n🔄 Cargando modelo desde {model_path}...")
+        try:
+            self.model = joblib.load(model_path)
+            self.scaler = joblib.load(scaler_path)
+            self.is_trained = True
+            print("✓ Modelo y escalador cargados exitosamente.")
+            return True
+        except FileNotFoundError:
+            print(f"❌ Error: No se encontraron los archivos {model_path} o {scaler_path}.")
+            print("   Asegúrate de ejecutar 'train_and_save.py' primero.")
+            return False
 
     def load_data(self, filepath='dataset_ml_final.csv'):
         """

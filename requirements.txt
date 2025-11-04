@@ -1,0 +1,10 @@
+Flask
+gunicorn
+psycopg2-binary
+pandas
+numpy
+xgboost
+scikit-learn
+scipy
+matplotlib
+qrcode
