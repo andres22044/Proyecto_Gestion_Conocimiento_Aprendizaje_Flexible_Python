@@ -1,6 +1,6 @@
 Flask
 gunicorn
-psycopg2-binary
+mysql-connector-python
 pandas
 numpy
 xgboost
