@@ -1,4 +1,5 @@
-import mysql.connector
+import psycopg2
+import psycopg2.extras
 import os
 import matplotlib
 matplotlib.use('Agg') 
@@ -31,21 +32,17 @@ logger = logging.getLogger(__name__)
 # =================================================================
 #                         CONFIGURACIÓN DE LA BASE DE DATOS
 # =================================================================
-DB_CONFIG = {
-    'host': '127.0.0.1',  
-    'user': 'root',       
-    'password': '', 
-    'database': 'usuarios_aula_espejo'
-}
+# Obtenemos la URL de la base de datos de las variables de entorno de Render
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db_connection():
+    """Se conecta a la base de datos PostgreSQL usando la URL de Render."""
     try:
-        conn = mysql.connector.connect(**DB_CONFIG)
+        conn = psycopg2.connect(DATABASE_URL)
         return conn
-    except mysql.connector.Error as err:
-        logger.error(f"Error al conectar a la base de datos: {err}")
+    except (Exception, psycopg2.Error) as err:
+        logger.error(f"Error al conectar a la base de datos PostgreSQL: {err}")
         return None
-
 # =================================================================
 #                         FUNCIÓN PARA GRÁFICOS
 # =================================================================
@@ -162,7 +159,7 @@ def login():
         if not conn:
             return render_template('login.html', error="Error de conexión con la base de datos.")
         
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         
         user = cursor.fetchone()
@@ -198,7 +195,7 @@ def register():
                          (username, hashed_password))
             conn.commit()
             logger.info(f"Nuevo usuario registrado: {username}")
-        except mysql.connector.Error as err:
+        except psycopg2.Error as err:
             logger.error(f"Error al registrar usuario: {err}")
             conn.rollback() 
             return render_template('register.html', error="El usuario ya existe o hubo un error.")
@@ -240,10 +237,11 @@ def save_prediction_to_db(sample_id, username, input_data, prediction_results):
     if not conn:
         logger.error("No se pudo conectar a la base de datos para guardar la predicción")
         return None
-    
+
     try:
         cursor = conn.cursor()
-        
+
+        # 1. MODIFICACIÓN: Añadimos "RETURNING ID" al final de la consulta
         query = """
         INSERT INTO tpu_resultados_muestra (
             sample_id, timestamp, user_name,
@@ -257,9 +255,9 @@ def save_prediction_to_db(sample_id, username, input_data, prediction_results):
             %s, %s, %s, %s,
             %s, %s,
             %s, %s
-        )
+        ) RETURNING ID; 
         """
-        
+
         values = (
             sample_id,
             datetime.now(),
@@ -277,25 +275,27 @@ def save_prediction_to_db(sample_id, username, input_data, prediction_results):
             prediction_results['HE_UTS_Mean'],
             prediction_results['HE_Elongation_Mean']
         )
-        
+
         cursor.execute(query, values)
-        conn.commit()
-        
-        prediction_id = cursor.lastrowid
-        
+
+        # 2. MODIFICACIÓN: Obtenemos el ID que la consulta nos retornó
+        prediction_id = cursor.fetchone()[0]
+
+        conn.commit() # Hacemos commit DESPUÉS de obtener el ID
+
         cursor.close()
         conn.close()
-        
+
         logger.info(f"Predicción guardada con ID: {prediction_id}")
         return prediction_id
-        
-    except mysql.connector.Error as err:
+
+    except psycopg2.Error as err: # 3. MODIFICACIÓN: Capturamos el error correcto
         logger.error(f"Error al guardar predicción en BD: {err}")
         if conn:
             conn.rollback()
         return None
     finally:
-        if conn and conn.is_connected():
+        if conn and not conn.closed: # Corregido un pequeño bug (conn.is_connected() no existe en psycopg2)
             conn.close()
 
 
@@ -309,7 +309,7 @@ def get_all_predictions():
         return []
     
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
         query = """
         SELECT ID, sample_id, timestamp, user_name,
@@ -326,7 +326,7 @@ def get_all_predictions():
         
         return predictions
         
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         logger.error(f"Error al obtener predicciones: {err}")
         return []
     finally:
@@ -344,7 +344,7 @@ def get_prediction_by_id(prediction_id):
         return None
     
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
         query = """
         SELECT * FROM tpu_resultados_muestra
@@ -359,7 +359,7 @@ def get_prediction_by_id(prediction_id):
         
         return prediction
         
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         logger.error(f"Error al obtener predicción {prediction_id}: {err}")
         return None
     finally:
@@ -393,7 +393,7 @@ def delete_prediction_by_id(prediction_id):
         
         return deleted
         
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         logger.error(f"Error al eliminar predicción {prediction_id}: {err}")
         if conn:
             conn.rollback()
