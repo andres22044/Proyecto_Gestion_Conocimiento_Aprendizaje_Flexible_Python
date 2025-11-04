@@ -1,5 +1,6 @@
 import psycopg2
 import psycopg2.extras
+from psycopg2.extras import DictCursor
 import os
 import matplotlib
 matplotlib.use('Agg') 
@@ -97,9 +98,6 @@ def create_prediction_vs_actual_chart(predictor, save_path):
     except Exception as e:
         logger.error(f"Error al crear el gráfico de validación: {e}")
 
-# =================================================================
-#                         CARGA GLOBAL DEL MODELO
-# =================================================================
 # =================================================================
 #                         CARGA GLOBAL DEL MODELO
 # =================================================================
@@ -239,7 +237,7 @@ def generar_siguiente_id_muestra():
     
     try:
         # 1. USAR DictCursor para obtener resultados como diccionario
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor = conn.cursor(cursor_factory=DictCursor)
         
         # 2. Sintaxis SQL ajustada
         # NOTA: En PostgreSQL es mejor usar minúsculas para los nombres de las columnas.

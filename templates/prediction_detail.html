@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Detalle de Predicción #{{ prediction.ID }} - PLIX{% endblock %}
+{% block title %}Detalle de Predicción #{{ prediction.id }} - PLIX{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -14,7 +14,7 @@
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 <h1 class="display-6 fw-bold" style="color: #004a80;">
-                    <i class="fas fa-file-alt me-2"></i>Detalle de Predicción #{{ prediction.ID }}
+                    <i class="fas fa-file-alt me-2"></i>Detalle de Predicción #{{ prediction.id }}
                 </h1>
                 <p class="text-muted mb-0">
                     <i class="fas fa-barcode me-1"></i>Muestra: <strong>{{ prediction.sample_id }}</strong>
@@ -94,12 +94,12 @@
                         <table class="table table-sm table-borderless">
                             <tbody>
                                 <tr>
-                                    <td class="fw-medium" style="width: 50%;"><i class="fas fa-flask text-primary me-2"></i>HSP (Hansen Solubility Parameter)</td>
-                                    <td class="text-end"><span class="badge bg-primary">{{ "%.3f"|format(prediction.HSP) }}</span></td>
+                                    <td class="fw-medium" style="width: 50%;"><i class="fas fa-flask text-primary me-2"></i>hsp (Hansen Solubility Parameter)</td>
+                                    <td class="text-end"><span class="badge bg-primary">{{ "%.3f"|format(prediction.hsp) }}</span></td>
                                 </tr>
                                 <tr>
                                     <td class="fw-medium"><i class="fas fa-clock text-warning me-2"></i>Tiempo de Curación</td>
-                                    <td class="text-end"><span class="badge bg-warning text-dark">{{ "%.2f"|format(prediction.Healing_Time_hrs) }} hrs</span></td>
+                                    <td class="text-end"><span class="badge bg-warning text-dark">{{ "%.2f"|format(prediction.healing_time_hrs) }} hrs</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -113,11 +113,11 @@
                             <tbody>
                                 <tr>
                                     <td class="fw-medium" style="width: 50%;"><i class="fas fa-weight-hanging text-danger me-2"></i>Estrés Máximo Original (UTS)</td>
-                                    <td class="text-end"><span class="badge bg-danger">{{ "%.3f"|format(prediction.UTS_Original_MPa) }} MPa</span></td>
+                                    <td class="text-end"><span class="badge bg-danger">{{ "%.3f"|format(prediction.uts_original_mpa) }} MPa</span></td>
                                 </tr>
                                 <tr>
                                     <td class="fw-medium"><i class="fas fa-expand-arrows-alt text-success me-2"></i>Deformación Original (Strain)</td>
-                                    <td class="text-end"><span class="badge bg-success">{{ "%.1f"|format(prediction.Strain_Original_percent) }} %</span></td>
+                                    <td class="text-end"><span class="badge bg-success">{{ "%.1f"|format(prediction.strain_original_percent) }} %</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -130,37 +130,37 @@
                         <div class="col-6 col-md-4">
                             <div class="p-2 bg-light rounded small text-center">
                                 <div class="text-muted mb-1">Peak logM</div>
-                                <strong>{{ "%.2f"|format(prediction.Peak_logM) }}</strong>
+                                <strong>{{ "%.2f"|format(prediction.peak_logm) }}</strong>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="p-2 bg-light rounded small text-center">
                                 <div class="text-muted mb-1">Peso Molecular</div>
-                                <strong>{{ "%.0f"|format(prediction.Molecular_Weight) }}</strong>
+                                <strong>{{ "%.0f"|format(prediction.molecular_weight) }}</strong>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="p-2 bg-light rounded small text-center">
                                 <div class="text-muted mb-1">Ángulo Contacto</div>
-                                <strong>{{ "%.2f"|format(prediction.Contact_Angle_Mean) }}°</strong>
+                                <strong>{{ "%.2f"|format(prediction.contact_angle_mean) }}°</strong>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="p-2 bg-light rounded small text-center">
                                 <div class="text-muted mb-1">Desv. Ángulo</div>
-                                <strong>{{ "%.2f"|format(prediction.Contact_Angle_Std) }}°</strong>
+                                <strong>{{ "%.2f"|format(prediction.contact_angle_std) }}°</strong>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="p-2 bg-light rounded small text-center">
                                 <div class="text-muted mb-1">FTIR H-Bond</div>
-                                <strong>{{ "%.2f"|format(prediction.FTIR_H_Bond) }}</strong>
+                                <strong>{{ "%.2f"|format(prediction.ftir_h_bond) }}</strong>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="p-2 bg-light rounded small text-center">
                                 <div class="text-muted mb-1">DSC Tg</div>
-                                <strong>{{ "%.2f"|format(prediction.DSC_Tg_C) }}°C</strong>
+                                <strong>{{ "%.2f"|format(prediction.dsc_tg_c) }}°C</strong>
                             </div>
                         </div>
                     </div>
@@ -187,20 +187,20 @@
                             <span class="text-muted small">(HE_UTS)</span>
                         </div>
                         <div class="progress" style="height: 30px;">
-                            {% if prediction.HE_UTS_Efficiency_percent >= 90 %}
+                            {% if prediction.he_uts_efficiency_percent >= 90 %}
                             <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: {{ prediction.HE_UTS_Efficiency_percent }}%">
-                                <strong>{{ "%.1f"|format(prediction.HE_UTS_Efficiency_percent) }}%</strong>
+                                 style="width: {{ prediction.he_uts_efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.he_uts_efficiency_percent) }}%</strong>
                             </div>
-                            {% elif prediction.HE_UTS_Efficiency_percent >= 70 %}
+                            {% elif prediction.he_uts_efficiency_percent >= 70 %}
                             <div class="progress-bar bg-warning" role="progressbar" 
-                                 style="width: {{ prediction.HE_UTS_Efficiency_percent }}%">
-                                <strong>{{ "%.1f"|format(prediction.HE_UTS_Efficiency_percent) }}%</strong>
+                                 style="width: {{ prediction.he_uts_efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.he_uts_efficiency_percent) }}%</strong>
                             </div>
                             {% else %}
                             <div class="progress-bar bg-danger" role="progressbar" 
-                                 style="width: {{ prediction.HE_UTS_Efficiency_percent }}%">
-                                <strong>{{ "%.1f"|format(prediction.HE_UTS_Efficiency_percent) }}%</strong>
+                                 style="width: {{ prediction.he_uts_efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.he_uts_efficiency_percent) }}%</strong>
                             </div>
                             {% endif %}
                         </div>
@@ -213,20 +213,20 @@
                             <span class="text-muted small">(HE_Strain)</span>
                         </div>
                         <div class="progress" style="height: 30px;">
-                            {% if prediction.HE_Elongation_Efficiency_percent >= 90 %}
+                            {% if prediction.he_elongation_efficiency_percent >= 90 %}
                             <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: {{ prediction.HE_Elongation_Efficiency_percent }}%">
-                                <strong>{{ "%.1f"|format(prediction.HE_Elongation_Efficiency_percent) }}%</strong>
+                                 style="width: {{ prediction.he_elongation_efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.he_elongation_efficiency_percent) }}%</strong>
                             </div>
-                            {% elif prediction.HE_Elongation_Efficiency_percent >= 70 %}
+                            {% elif prediction.he_elongation_efficiency_percent >= 70 %}
                             <div class="progress-bar bg-warning" role="progressbar" 
-                                 style="width: {{ prediction.HE_Elongation_Efficiency_percent }}%">
-                                <strong>{{ "%.1f"|format(prediction.HE_Elongation_Efficiency_percent) }}%</strong>
+                                 style="width: {{ prediction.he_elongation_efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.he_elongation_efficiency_percent) }}%</strong>
                             </div>
                             {% else %}
                             <div class="progress-bar bg-danger" role="progressbar" 
-                                 style="width: {{ prediction.HE_Elongation_Efficiency_percent }}%">
-                                <strong>{{ "%.1f"|format(prediction.HE_Elongation_Efficiency_percent) }}%</strong>
+                                 style="width: {{ prediction.he_elongation_efficiency_percent }}%">
+                                <strong>{{ "%.1f"|format(prediction.he_elongation_efficiency_percent) }}%</strong>
                             </div>
                             {% endif %}
                         </div>

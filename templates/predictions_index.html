@@ -94,7 +94,7 @@
                     <tbody>
                         {% for pred in predictions %}
                         <tr>
-                            <td class="text-center fw-bold">{{ pred.ID }}</td>
+                            <td class="text-center fw-bold">{{ pred.id }}</td>
                             <td>
                                 <i class="fas fa-barcode text-primary me-1"></i>
                                 <span class="fw-medium">{{ pred.sample_id }}</span>
@@ -112,31 +112,31 @@
                                 </small>
                             </td>
                             <td class="text-center">
-                                {% if pred.HE_UTS_Efficiency_percent >= 90 %}
-                                <span class="badge bg-success fs-6">{{ "%.1f"|format(pred.HE_UTS_Efficiency_percent) }}%</span>
-                                {% elif pred.HE_UTS_Efficiency_percent >= 70 %}
-                                <span class="badge bg-warning text-dark fs-6">{{ "%.1f"|format(pred.HE_UTS_Efficiency_percent) }}%</span>
+                                {% if pred.he_uts_efficiency_percent >= 90 %}
+                                <span class="badge bg-success fs-6">{{ "%.1f"|format(pred.he_uts_efficiency_percent) }}%</span>
+                                {% elif pred.he_uts_efficiency_percent >= 70 %}
+                                <span class="badge bg-warning text-dark fs-6">{{ "%.1f"|format(pred.he_uts_efficiency_percent) }}%</span>
                                 {% else %}
-                                <span class="badge bg-danger fs-6">{{ "%.1f"|format(pred.HE_UTS_Efficiency_percent) }}%</span>
+                                <span class="badge bg-danger fs-6">{{ "%.1f"|format(pred.he_uts_efficiency_percent) }}%</span>
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                {% if pred.HE_Elongation_Efficiency_percent >= 90 %}
-                                <span class="badge bg-success fs-6">{{ "%.1f"|format(pred.HE_Elongation_Efficiency_percent) }}%</span>
-                                {% elif pred.HE_Elongation_Efficiency_percent >= 70 %}
-                                <span class="badge bg-warning text-dark fs-6">{{ "%.1f"|format(pred.HE_Elongation_Efficiency_percent) }}%</span>
+                                {% if pred.he_elongation_efficiency_percent >= 90 %}
+                                <span class="badge bg-success fs-6">{{ "%.1f"|format(pred.he_elongation_efficiency_percent) }}%</span>
+                                {% elif pred.he_elongation_efficiency_percent >= 70 %}
+                                <span class="badge bg-warning text-dark fs-6">{{ "%.1f"|format(pred.he_elongation_efficiency_percent) }}%</span>
                                 {% else %}
-                                <span class="badge bg-danger fs-6">{{ "%.1f"|format(pred.HE_Elongation_Efficiency_percent) }}%</span>
+                                <span class="badge bg-danger fs-6">{{ "%.1f"|format(pred.he_elongation_efficiency_percent) }}%</span>
                                 {% endif %}
                             </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ url_for('prediction_detail', prediction_id=pred.ID) }}" 
+                                    <a href="{{ url_for('prediction_detail', prediction_id=pred.id) }}" 
                                        class="btn btn-outline-primary" 
                                        title="Ver detalles">
                                         <i class="fas fa-eye"></i> Detalles
                                     </a>
-                                    <button onclick="deletePrediction({{ pred.ID }})" 
+                                    <button onclick="deletePrediction({{ pred.id }})" 
                                             class="btn btn-outline-danger" 
                                             title="Eliminar">
                                         <i class="fas fa-trash"></i>
