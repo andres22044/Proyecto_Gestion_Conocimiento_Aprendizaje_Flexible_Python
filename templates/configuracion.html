@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración de Usuario{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light min-vh-75">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-5 fw-bold mb-4 text-primary text-center">Configuración de {{ user.username }}</h2>
+                <p class="lead text-muted text-center mb-5">
+                    Gestiona tu información de perfil y credenciales de acceso.
+                </p>
+
+                <div class="card shadow-lg border-0">
+                    <div class="card-header p-0">
+                        <ul class="nav nav-tabs nav-fill border-bottom-0" id="configTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold py-3" id="perfil-tab" data-bs-toggle="tab" data-bs-target="#perfil" type="button" role="tab" aria-controls="perfil" aria-selected="true">
+                                    <i class="fas fa-user me-2"></i> Perfil
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold py-3" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="password" aria-selected="false">
+                                    <i class="fas fa-lock me-2"></i> Contraseña
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="tab-content" id="configTabContent">
+                            
+                            <div class="tab-pane fade show active" id="perfil" role="tabpanel" aria-labelledby="perfil-tab">
+                                <h4 class="mb-3 text-dark">Actualizar Información de Perfil</h4>
+                                <form id="form-actualizar-perfil">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label fw-bold">Nombre de Usuario</label>
+                                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label fw-bold">Correo Electrónico</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                                    </div>
+                                    <div id="perfil-message" class="mb-3" style="display: none;"></div>
+                                    <button type="submit" class="btn btn-primary fw-bold" id="btn-actualizar-perfil">
+                                        <i class="fas fa-save me-2"></i> Guardar Cambios
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+                                <h4 class="mb-3 text-dark">Cambiar Contraseña</h4>
+                                <form id="form-cambiar-password">
+                                    <div class="mb-3">
+                                        <label for="old_password" class="form-label fw-bold">Contraseña Actual</label>
+                                        <input type="password" class="form-control" id="old_password" name="old_password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="new_password" class="form-label fw-bold">Nueva Contraseña</label>
+                                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirm_password" class="form-label fw-bold">Confirmar Nueva Contraseña</label>
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                        <div class="form-text text-danger" id="password-match-error" style="display: none;">Las contraseñas no coinciden.</div>
+                                    </div>
+                                    <div id="password-message" class="mb-3" style="display: none;"></div>
+                                    <button type="submit" class="btn btn-primary fw-bold" id="btn-cambiar-password">
+                                        <i class="fas fa-key me-2"></i> Cambiar Contraseña
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const perfilForm = document.getElementById('form-actualizar-perfil');
+        const passwordForm = document.getElementById('form-cambiar-password');
+        const perfilMessage = document.getElementById('perfil-message');
+        const passwordMessage = document.getElementById('password-message');
+        const passwordMatchError = document.getElementById('password-match-error');
+
+        // Función auxiliar para mostrar mensajes (success/danger)
+        function showMessage(element, type, message) {
+            element.style.display = 'block';
+            element.className = `alert alert-${type}`;
+            element.innerHTML = message;
+        }
+
+        // 1. Manejo de la actualización de Perfil (AJAX)
+        if (perfilForm) {
+            perfilForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                perfilMessage.style.display = 'none';
+
+                const formData = new FormData(perfilForm);
+                const data = Object.fromEntries(formData.entries());
+
+                fetch('{{ url_for("actualizar_perfil") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showMessage(perfilMessage, 'success', result.message + ' (Refresca la página para ver el cambio en el menú)');
+                        // Actualizar el nombre de usuario en el título de la página
+                        document.querySelector('.display-5').textContent = 'Configuración de ' + data.username;
+                    } else {
+                        showMessage(perfilMessage, 'danger', 'Error: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    showMessage(perfilMessage, 'danger', 'Error de conexión: No se pudo contactar al servidor.');
+                    console.error('Error:', error);
+                });
+            });
+        }
+
+        // 2. Manejo del cambio de Contraseña (AJAX)
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                passwordMessage.style.display = 'none';
+                passwordMatchError.style.display = 'none';
+
+                const newPassword = document.getElementById('new_password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+
+                // Validación de que las contraseñas coincidan
+                if (newPassword !== confirmPassword) {
+                    passwordMatchError.style.display = 'block';
+                    return;
+                }
+
+                const formData = new FormData(passwordForm);
+                const data = Object.fromEntries(formData.entries());
+                
+                // No enviar el campo de confirmación al servidor
+                delete data.confirm_password; 
+
+                fetch('{{ url_for("actualizar_password") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showMessage(passwordMessage, 'success', result.message);
+                        // Limpiar los campos después del éxito
+                        passwordForm.reset();
+                    } else {
+                        showMessage(passwordMessage, 'danger', 'Error: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    showMessage(passwordMessage, 'danger', 'Error de conexión: No se pudo contactar al servidor.');
+                    console.error('Error:', error);
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

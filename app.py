@@ -134,10 +134,29 @@ print("="*50)
 print("MODELO CARGADO Y LISTO.")
 print("="*50)
 
+
+def get_user_data(user_id):
+    """Obtiene datos de perfil de la base de datos por ID."""
+    conn = get_db_connection()
+    if not conn:
+        return None
+    try:
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        # Usamos user_id para obtener el usuario
+        cursor.execute("SELECT id, username, email FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        cursor.close()
+        return dict(user) if user else None
+    except psycopg2.Error as err:
+        logger.error(f"Error al obtener datos del usuario {user_id}: {err}")
+        return None
+    finally:
+        if conn and not conn.closed:
+            conn.close()
+
 # =================================================================
 #                             RUTAS DE LA APLICACIÓN
 # =================================================================
-
 @app.route('/')
 def index(): 
     """Ruta de inicio, redirige al login si no hay sesión."""
@@ -213,6 +232,108 @@ def logout():
     if username:
         logger.info(f"Usuario {username} ha cerrado sesión.")
     return redirect(url_for('login'))
+
+
+@app.route('/configuracion', methods=['GET'])
+def configuracion():
+    """Muestra la página de configuración del usuario."""
+    # Asegura que el usuario esté loggeado y que tengamos su ID
+    if 'username' not in session or 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user_data = get_user_data(session['user_id'])
+    
+    if not user_data:
+        # En caso de que haya un error en la DB o el ID de sesión sea inválido
+        return render_template('pagina_error.html', 
+                             error_title="Error de usuario",
+                             error_message="No se pudieron cargar los datos del usuario.",
+                             error_code=500), 500
+        
+    # Renderiza la plantilla, pasando los datos del usuario.
+    return render_template('configuracion.html', user=user_data)
+
+
+@app.route('/configuracion/actualizar', methods=['POST'])
+def actualizar_perfil():
+    """Maneja la actualización del nombre de usuario y correo."""
+    if 'username' not in session or 'user_id' not in session:
+        return jsonify({"success": False, "message": "No autorizado"}), 401
+    
+    user_id = session['user_id']
+    new_username = request.form['username']
+    new_email = request.form['email']
+    
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({"success": False, "message": "Error de conexión con la base de datos."}), 500
+    
+    cursor = conn.cursor()
+    try:
+        # 1. Verificar si el nuevo username ya existe (excepto para el propio usuario)
+        cursor.execute("SELECT id FROM users WHERE username = %s AND id != %s", (new_username, user_id))
+        if cursor.fetchone():
+            return jsonify({"success": False, "message": "El nombre de usuario ya está en uso."}), 400
+            
+        # 2. Actualizar la base de datos
+        cursor.execute("UPDATE users SET username = %s, email = %s WHERE id = %s", 
+                       (new_username, new_email, user_id))
+        conn.commit()
+        
+        # 3. Actualizar la sesión para que el nombre se refleje inmediatamente en la navbar
+        session['username'] = new_username
+        logger.info(f"Usuario {user_id} ({session['username']}) actualizó su perfil.")
+        
+        return jsonify({"success": True, "message": "Perfil actualizado correctamente."})
+    except psycopg2.Error as err:
+        logger.error(f"Error al actualizar perfil: {err}")
+        conn.rollback()
+        return jsonify({"success": False, "message": "Error al actualizar el perfil en la base de datos."}), 500
+    finally:
+        if conn and not conn.closed:
+            cursor.close()
+            conn.close()
+
+
+@app.route('/configuracion/password', methods=['POST'])
+def actualizar_password():
+    """Maneja el cambio de contraseña."""
+    if 'username' not in session or 'user_id' not in session:
+        return jsonify({"success": False, "message": "No autorizado"}), 401
+
+    user_id = session['user_id']
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({"success": False, "message": "Error de conexión con la base de datos."}), 500
+
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    try:
+        # 1. Verificar la contraseña actual
+        cursor.execute("SELECT password_hash FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+
+        if user and check_password_hash(user['password_hash'], old_password):
+            # 2. Hashear la nueva contraseña y actualizar
+            hashed_new_password = generate_password_hash(new_password)
+            cursor.execute("UPDATE users SET password_hash = %s WHERE id = %s", 
+                           (hashed_new_password, user_id))
+            conn.commit()
+            logger.info(f"Contraseña de usuario {user_id} actualizada.")
+            return jsonify({"success": True, "message": "Contraseña actualizada correctamente."})
+        else:
+            return jsonify({"success": False, "message": "La contraseña actual es incorrecta."}), 400
+
+    except psycopg2.Error as err:
+        logger.error(f"Error al cambiar contraseña: {err}")
+        conn.rollback()
+        return jsonify({"success": False, "message": "Error al actualizar la contraseña en la base de datos."}), 500
+    finally:
+        if conn and not conn.closed:
+            cursor.close()
+            conn.close()
 
 @app.route('/proyecto')
 def proyecto():
