@@ -14,6 +14,7 @@ import qrcode
 from io import BytesIO
 import base64
 import json
+import re
 from datetime import datetime
 
 # Importamos tu clase de modelo DIRECTAMENTE desde tu archivo
@@ -349,65 +350,61 @@ def proyecto():
 
 def generar_siguiente_id_muestra():
     """
-    Genera el siguiente ID de muestra en la secuencia PLIX-SAMPLE-XXX, 
-    compatible con PostgreSQL (psycopg2).
+    Genera el siguiente ID de muestra de forma ROBUSTA.
+    Trae los IDs existentes y calcula el máximo en Python para evitar errores de SQL.
     """
     conn = get_db_connection()
     if not conn:
-        # Si no hay conexión, generar un ID basado en timestamp
         return f"PLIX-SAMPLE-{int(time.time())}"
     
     try:
-        # 1. USAR DictCursor para obtener resultados como diccionario
         cursor = conn.cursor(cursor_factory=DictCursor)
         
-        # 2. Sintaxis SQL ajustada
-        # NOTA: En PostgreSQL es mejor usar minúsculas para los nombres de las columnas.
-        # Asumiendo que la columna de orden es 'id' (SERIAL) y no 'ID'.
-        query = """
-        SELECT sample_id FROM tpu_resultados_muestra 
-        WHERE sample_id LIKE 'PLIX-SAMPLE-%'
-        ORDER BY id DESC 
-        LIMIT 1
-        """
-        
+        # 1. Traemos TODOS los IDs que parezcan muestras (sin calcular nada en SQL)
+        # Usamos ILIKE para que no importe si está en mayúsculas o minúsculas
+        query = "SELECT sample_id FROM tpu_resultados_muestra WHERE sample_id ILIKE 'PLIX-SAMPLE-%'"
         cursor.execute(query)
-        ultimo = cursor.fetchone()
-
-        if ultimo:
-            ultimo_id = ultimo['sample_id']
-            # Extraer el número del último ID (ej: 'PLIX-SAMPLE-005' -> 5)
-            try:
-                # Dividir por guiones y tomar la última parte
-                partes = ultimo_id.split('-')
-                if len(partes) >= 3:
-                    numero_str = partes[-1]
-                    numero_actual = int(numero_str)
-                    nuevo_numero = numero_actual + 1
-                    # Formatear con ceros a la izquierda (3 dígitos)
-                    return f"PLIX-SAMPLE-{nuevo_numero:03d}"
-                else:
-                    # Si el formato no es el esperado, usar timestamp
-                    return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
-            except (ValueError, IndexError):
-                # Si hay error al parsear, usar timestamp
-                return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
+        resultados = cursor.fetchall()
+        
+        # 2. Procesamos en Python (Aquí es donde arreglamos la lógica)
+        numeros_existentes = []
+        
+        for fila in resultados:
+            sample_id_str = fila['sample_id']
+            # Usamos Regex de Python para extraer solo los números al final
+            # Esto extrae '006' de 'PLIX-SAMPLE-006' o incluso de 'PLIX-SAMPLE-006-A' si hubiera basura
+            match = re.search(r'PLIX-SAMPLE-(\d+)', sample_id_str, re.IGNORECASE)
+            
+            if match:
+                try:
+                    numero = int(match.group(1))
+                    numeros_existentes.append(numero)
+                except ValueError:
+                    continue # Si falla al convertir, ignoramos esa fila mala
+        
+        # 3. Calculamos el máximo
+        if not numeros_existentes:
+            # Si la lista está vacía, es el primero
+            siguiente_numero = 1
         else:
-            # No hay registros previos, empezar en 001
-            return "PLIX-SAMPLE-001"
+            siguiente_numero = max(numeros_existentes) + 1
+            
+        # 4. Retornamos el nuevo ID formateado
+        nuevo_id = f"PLIX-SAMPLE-{siguiente_numero:03d}"
+        logger.info(f"Generando nuevo ID: {nuevo_id} (Basado en {len(numeros_existentes)} registros previos)")
         
-        # ... (La lógica de Python para incrementar y formatear es correcta) ...
-        
-        # 3. MANEJO DE ERRORES: Cambiado a psycopg2.Error
+        return nuevo_id
+
     except psycopg2.Error as err:
-        logger.error(f"Error al generar ID de muestra: {err}")
+        logger.error(f"Error SQL al generar ID: {err}")
+        # Fallback seguro
+        return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
+    except Exception as e:
+        logger.error(f"Error Python al generar ID: {e}")
         return f"PLIX-SAMPLE-{int(time.time() % 1000):03d}"
     finally:
         if conn and not conn.closed:
-             # Asegúrate de que tu @app.teardown_appcontext o esta línea maneje el cierre
-             # Si usas @app.teardown_appcontext, puedes eliminar esta línea de cierre explícito.
              conn.close()
-
 
 def validar_id_muestra_unico(sample_id):
     """
